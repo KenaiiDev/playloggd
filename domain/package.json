@@ -1,0 +1,14 @@
+{
+  "name": "domain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest --watch"
+  },
+  "keywords": [],
+  "author": "Lucas Villanueva",
+  "license": "ISC",
+  "packageManager": "pnpm@10.18.0"
+}
