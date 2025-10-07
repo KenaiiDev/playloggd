@@ -37,13 +37,13 @@ describe("Get users", () => {
   };
 
   describe("By id", () => {
-    it("Should return undefined if id is empty", async () => {
+    it("Should return an error id is empty", async () => {
       const result = await getUsers({
         dependencies: { userService },
         payload: { id: "" },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
     it("Should return an user when a registered id is given", async () => {
@@ -73,31 +73,31 @@ describe("Get users", () => {
       expect(result).toBeUndefined();
     });
 
-    it("Should return undefined if id is null", async () => {
+    it("Should return an error if id is null", async () => {
       const result = await getUsers({
         dependencies: { userService },
         payload: { id: null as unknown as string },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
-    it("Should return undefined if id is undefined", async () => {
+    it("Should return an error if id is undefined", async () => {
       const result = await getUsers({
         dependencies: { userService },
         payload: { id: undefined },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
-    it("Should return undefined if id contains only spaces", async () => {
+    it("Should return an error if id contains only spaces", async () => {
       const result = await getUsers({
         dependencies: { userService },
         payload: { id: "   " },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
   });
 
@@ -120,40 +120,40 @@ describe("Get users", () => {
       });
     });
 
-    it("Should return undefined if email is empty", async () => {
+    it("Should return an error if email is empty", async () => {
       const result = await getUsersByEmail({
         dependencies: { userService },
         payload: { email: "" },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
-    it("Should return undefined if email is null", async () => {
+    it("Should return an error if email is null", async () => {
       const result = await getUsersByEmail({
         dependencies: { userService },
         payload: { email: null as unknown as string },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
-    it("Should return undefined if email is undefined", async () => {
+    it("Should return an error if email is undefined", async () => {
       const result = await getUsersByEmail({
         dependencies: { userService },
         payload: { email: undefined },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
-    it("Should return undefined if email contains only spaces", async () => {
+    it("Should return an error if email contains only spaces", async () => {
       const result = await getUsersByEmail({
         dependencies: { userService },
         payload: { email: "   " },
       });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeInstanceOf(Error);
     });
 
     it("Should return undefined if the user is not found by email", async () => {
