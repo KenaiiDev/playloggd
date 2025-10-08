@@ -1,43 +1,18 @@
-import { describe, expect, it } from "vitest";
-
+import { beforeEach, describe, expect, it } from "vitest";
+import { mockReset } from "vitest-mock-extended";
+import { createUserServiceMock } from "@services/__mocks__";
+import { createMockUser } from "@/entities/__mocks__";
 import { getUsers, getUsersByEmail } from "./get-user";
-import { User } from "@/entities/user";
-
-const mockedUsers: User[] = [
-  {
-    id: "1",
-    username: "user",
-    email: "test@test.com",
-    passwordHash: "hashedPass",
-    avatarUrl: "www.image.com/avatar",
-    bio: "Lorem ipsum",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "2",
-    username: "user2",
-    email: "test2@test.com",
-    passwordHash: "hashedPass",
-    avatarUrl: "www.image.com/avatar",
-    bio: "Lorem ipsum",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
 
 describe("Get users", () => {
-  const userService = {
-    getById: async (id: string) => {
-      return mockedUsers.find((user) => user.id === id);
-    },
-    getByEmail: async (email: string) => {
-      return mockedUsers.find((user) => user.email === email);
-    },
-  };
+  const userService = createUserServiceMock();
+
+  beforeEach(() => {
+    mockReset(userService);
+  });
 
   describe("By id", () => {
-    it("Should return an error id is empty", async () => {
+    it("Should return an error if id is empty", async () => {
       const result = await getUsers({
         dependencies: { userService },
         payload: { id: "" },
@@ -47,30 +22,30 @@ describe("Get users", () => {
     });
 
     it("Should return an user when a registered id is given", async () => {
+      // Crear usuario mock con ID específico
+      const mockUser = createMockUser({ id: "123" });
+      userService.getById.mockResolvedValue(mockUser);
+
       const result = await getUsers({
         dependencies: { userService },
-        payload: { id: "1" },
+        payload: { id: "123" },
       });
 
-      expect(result).toStrictEqual({
-        id: "1",
-        username: "user",
-        email: "test@test.com",
-        passwordHash: "hashedPass",
-        avatarUrl: "www.image.com/avatar",
-        bio: "Lorem ipsum",
-        createdAt: mockedUsers[0].createdAt,
-        updatedAt: mockedUsers[0].updatedAt,
-      });
+      expect(result).toEqual(mockUser);
+      expect(userService.getById).toHaveBeenCalledWith("123");
+      expect(userService.getById).toHaveBeenCalledOnce();
     });
 
     it("Should return undefined if the user is not found", async () => {
+      userService.getById.mockResolvedValue(undefined);
+
       const result = await getUsers({
         dependencies: { userService },
-        payload: { id: "4" },
+        payload: { id: "nonexistent" },
       });
 
       expect(result).toBeUndefined();
+      expect(userService.getById).toHaveBeenCalledWith("nonexistent");
     });
 
     it("Should return an error if id is null", async () => {
@@ -99,25 +74,35 @@ describe("Get users", () => {
 
       expect(result).toBeInstanceOf(Error);
     });
+
+    it("Should handle service errors gracefully", async () => {
+      const serviceError = new Error("Database connection failed");
+      userService.getById.mockRejectedValue(serviceError);
+
+      await expect(
+        getUsers({
+          dependencies: { userService },
+          payload: { id: "123" },
+        })
+      ).rejects.toThrow("Database connection failed");
+
+      expect(userService.getById).toHaveBeenCalledWith("123");
+    });
   });
 
   describe("By email", () => {
     it("Should return an user when an email is given", async () => {
+      const mockUser = createMockUser({ email: "test@example.com" });
+      userService.getByEmail.mockResolvedValue(mockUser);
+
       const result = await getUsersByEmail({
         dependencies: { userService },
-        payload: { email: "test@test.com" },
+        payload: { email: "test@example.com" },
       });
 
-      expect(result).toStrictEqual({
-        id: "1",
-        username: "user",
-        email: "test@test.com",
-        passwordHash: "hashedPass",
-        avatarUrl: "www.image.com/avatar",
-        bio: "Lorem ipsum",
-        createdAt: mockedUsers[0].createdAt,
-        updatedAt: mockedUsers[0].updatedAt,
-      });
+      expect(result).toEqual(mockUser);
+      expect(userService.getByEmail).toHaveBeenCalledWith("test@example.com");
+      expect(userService.getByEmail).toHaveBeenCalledOnce();
     });
 
     it("Should return an error if email is empty", async () => {
@@ -157,12 +142,31 @@ describe("Get users", () => {
     });
 
     it("Should return undefined if the user is not found by email", async () => {
+      userService.getByEmail.mockResolvedValue(undefined);
+
       const result = await getUsersByEmail({
         dependencies: { userService },
         payload: { email: "nonexistent@test.com" },
       });
 
       expect(result).toBeUndefined();
+      expect(userService.getByEmail).toHaveBeenCalledWith(
+        "nonexistent@test.com"
+      );
+    });
+
+    it("Should handle service errors gracefully", async () => {
+      const serviceError = new Error("Database timeout");
+      userService.getByEmail.mockRejectedValue(serviceError);
+
+      await expect(
+        getUsersByEmail({
+          dependencies: { userService },
+          payload: { email: "test@example.com" },
+        })
+      ).rejects.toThrow("Database timeout");
+
+      expect(userService.getByEmail).toHaveBeenCalledWith("test@example.com");
     });
   });
 });
