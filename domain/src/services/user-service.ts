@@ -12,4 +12,15 @@ export interface UserService {
       bio?: string;
     }
   ) => Promise<User>;
+  update: ({
+    user,
+    data,
+  }: {
+    user: string;
+    data: Partial<
+      Omit<User, "id" | "createdAt" | "updatedAt" | "passwordHash">
+    > & {
+      password?: string;
+    };
+  }) => Promise<User>;
 }
