@@ -61,15 +61,14 @@ describe("Search Game Use Case", () => {
   });
 
   it("should handle minimum query length requirement", async () => {
-    const query = "a";
+    const query = "a"; // Too short
 
-    const result = await expect(
-      searchGame({
-        dependencies: { gameService },
-        payload: { query },
-      })
-    );
+    const result = await searchGame({
+      dependencies: { gameService },
+      payload: { query },
+    });
 
     expect(result).toBeInstanceOf(Error);
+    expect(gameService.searchGames).not.toHaveBeenCalled();
   });
 });
