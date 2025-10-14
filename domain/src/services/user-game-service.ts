@@ -9,4 +9,5 @@ export interface UserGameService {
     data: Omit<UserGame, "id" | "createdAt" | "updatedAt">
   ) => Promise<UserGame>;
   removeUserGame: (userId: string, gameId: string) => Promise<undefined>;
+  getUserGames: (userId: string) => Promise<UserGame[]>;
 }
