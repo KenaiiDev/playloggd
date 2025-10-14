@@ -8,4 +8,5 @@ export interface UserGameService {
   addUserGame: (
     data: Omit<UserGame, "id" | "createdAt" | "updatedAt">
   ) => Promise<UserGame>;
+  removeUserGame: (userId: string, gameId: string) => Promise<undefined>;
 }
