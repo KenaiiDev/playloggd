@@ -57,7 +57,6 @@ describe("Login", () => {
       },
     });
 
-    console.log({ result });
     expect(result).toBeInstanceOf(Error);
     if (result instanceof Error) {
       expect(result.message).toBe("Email is required");
@@ -73,7 +72,6 @@ describe("Login", () => {
       },
     });
 
-    console.log({ result });
     expect(result).toBeInstanceOf(Error);
     if (result instanceof Error) {
       expect(result.message).toBe("Password is required");
