@@ -1,4 +1,4 @@
-import { UserGame } from "@/entities/user-game";
+import { GameStatus, UserGame } from "@/entities/user-game";
 
 export interface UserGameService {
   findUserGame: (
@@ -10,4 +10,13 @@ export interface UserGameService {
   ) => Promise<UserGame>;
   removeUserGame: (userId: string, gameId: string) => Promise<undefined>;
   getUserGames: (userId: string) => Promise<UserGame[]>;
+  updateGameStatus: ({
+    userId,
+    gameExternalId,
+    status,
+  }: {
+    userId: string;
+    gameExternalId: string;
+    status: GameStatus;
+  }) => Promise<UserGame>;
 }
