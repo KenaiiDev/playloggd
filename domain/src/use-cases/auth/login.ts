@@ -27,8 +27,6 @@ export async function login({ dependencies, payload }: loginParams) {
   const token = await dependencies.authService.generateToken(user?.id);
 
   return {
-    token,
-    expiresIn: 86400,
-    tokenType: "Bearer",
+    ...token,
   };
 }

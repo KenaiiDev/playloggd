@@ -23,9 +23,16 @@ describe("Login", () => {
       passwordHash: "$2b$10$hashedpassword",
     });
 
+    const mockTokens = {
+      accessToken: "access-token",
+      refreshToken: "refresh-token",
+      tokenType: "Bearer",
+      expiresIn: 86400,
+    };
+
     userService.getByEmail.mockResolvedValue(mockUser);
     authService.verifyPassword.mockResolvedValue(true);
-    authService.generateToken.mockResolvedValue("jwt-token");
+    authService.generateToken.mockResolvedValue(mockTokens);
 
     const result = await login({
       dependencies: { userService, authService },
@@ -36,7 +43,8 @@ describe("Login", () => {
     });
 
     expect(result).toEqual({
-      token: "jwt-token",
+      accessToken: "access-token",
+      refreshToken: "refresh-token",
       expiresIn: 86400,
       tokenType: "Bearer",
     });
@@ -99,9 +107,16 @@ describe("Login", () => {
       passwordHash: "$2b$10$hashedpassword",
     });
 
+    const mockTokens = {
+      accessToken: "access-token",
+      refreshToken: "refresh-token",
+      tokenType: "Bearer",
+      expiresIn: 86400,
+    };
+
     userService.getByEmail.mockResolvedValue(mockUser);
     authService.verifyPassword.mockResolvedValue(false);
-    authService.generateToken.mockResolvedValue("jwt-token");
+    authService.generateToken.mockResolvedValue(mockTokens);
 
     const result = await login({
       dependencies: { userService, authService },
