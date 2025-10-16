@@ -16,4 +16,13 @@ export interface AuthService {
     tokenType: string;
     expiresIn: number;
   }>;
+  changePassword: ({
+    userId,
+    currentPassword,
+    newPassword,
+  }: {
+    userId: string;
+    currentPassword: string;
+    newPassword: string;
+  }) => Promise<boolean>;
 }
