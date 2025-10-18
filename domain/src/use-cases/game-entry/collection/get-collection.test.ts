@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
 
-import { GameStatusEnum } from "@/entities/user-game";
+import { GameStatusEnum } from "@/entities/game-entry";
 import { createMockGame } from "@/entities/__mocks__/mock-game";
 import { createMockUser } from "@/entities/__mocks__/mock-user";
-import { createUserGameServiceMock } from "@/services/__mocks__/";
+import { createGameEntryServiceMock } from "@/services/__mocks__/";
 import { createGameServiceMock } from "@/services/__mocks__/";
 import { getCollection } from "./get-collection";
 
@@ -58,7 +58,7 @@ describe("Get Collection Use Case", () => {
     },
   ];
 
-  const userGameService = createUserGameServiceMock();
+  const userGameService = createGameEntryServiceMock();
   const gameService = createGameServiceMock();
 
   beforeEach(() => {

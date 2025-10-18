@@ -1,9 +1,9 @@
-import { GameStatus } from "@/entities/user-game";
-import { UserGameService } from "@/services";
+import { GameStatus } from "@/entities/game-entry";
+import { GameEntryService } from "@/services";
 
 interface UpdateGameStatusProps {
   dependencies: {
-    userGameService: UserGameService;
+    userGameService: GameEntryService;
   };
   payload: {
     userId: string;

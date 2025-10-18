@@ -1,8 +1,8 @@
-import { UserGameService } from "@/services";
+import { GameEntryService } from "@/services";
 
 interface RemoveFromCollectionParams {
   dependencies: {
-    userGameService: UserGameService;
+    userGameService: GameEntryService;
   };
   payload: {
     userId: string;

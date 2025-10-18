@@ -1,9 +1,9 @@
-import { GameStatus } from "@/entities/user-game";
-import { GameService, UserGameService } from "@/services";
+import { GameStatus } from "@/entities/game-entry";
+import { GameService, GameEntryService } from "@/services";
 
 interface GetCollectionParams {
   dependencies: {
-    userGameService: UserGameService;
+    userGameService: GameEntryService;
     gameService?: GameService;
   };
   payload: {

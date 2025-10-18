@@ -1,6 +1,6 @@
 import type { BaseEntity } from "@/utils/types";
 
-export interface UserGame extends BaseEntity {
+export interface GameEntry extends BaseEntity {
   userId: string;
   gameExternalId: string;
   status: GameStatus;

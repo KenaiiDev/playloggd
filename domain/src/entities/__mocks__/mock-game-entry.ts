@@ -1,9 +1,11 @@
 import { faker } from "@faker-js/faker";
-import { type UserGame, GameStatusEnum } from "../user-game";
+import { type GameEntry, GameStatusEnum } from "../game-entry";
 import { createMockGame } from "./mock-game";
 import { createMockUser } from "./mock-user";
 
-export const createMockUserGame = (override?: Partial<UserGame>): UserGame => {
+export const createMockGameEntry = (
+  override?: Partial<GameEntry>
+): GameEntry => {
   const mockUser = createMockUser();
   const mockGame = createMockGame();
 

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
 
-import { GameStatus, GameStatusEnum } from "@/entities/user-game";
+import { GameStatus, GameStatusEnum } from "@/entities/game-entry";
 import { createMockUser } from "@/entities/__mocks__/mock-user";
-import { createUserGameServiceMock } from "@/services/__mocks__";
+import { createGameEntryServiceMock } from "@/services/__mocks__";
 import { updateGameStatus } from "./update-game-status";
 
 describe("Update Game Status Use Case", () => {
@@ -11,7 +11,7 @@ describe("Update Game Status Use Case", () => {
     id: "user-123",
   });
 
-  const userGameService = createUserGameServiceMock();
+  const userGameService = createGameEntryServiceMock();
 
   beforeEach(() => {
     mockReset(userGameService);

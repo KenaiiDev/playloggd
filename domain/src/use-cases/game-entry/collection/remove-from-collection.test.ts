@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
 
-import { GameStatusEnum } from "@/entities/user-game";
+import { GameStatusEnum } from "@/entities/game-entry";
 import { createMockGame } from "@/entities/__mocks__/mock-game";
 import { createMockUser } from "@/entities/__mocks__/mock-user";
-import { createUserGameServiceMock } from "@/services/__mocks__/";
-import { addToCollection } from "./add-to-collection";
+import { createGameEntryServiceMock } from "@/services/__mocks__/";
+import { removeFromCollection } from "./remove-from-collection";
 
-describe("Add To Collection Use Case", () => {
+describe("Remove From Collection Use Case", () => {
   const mockGame = createMockGame({
     externalId: "game-123",
     title: "The Last of Us",
@@ -17,59 +17,55 @@ describe("Add To Collection Use Case", () => {
     id: "user-123",
   });
 
-  const userGameService = createUserGameServiceMock();
+  const userGameService = createGameEntryServiceMock();
 
   beforeEach(() => {
     mockReset(userGameService);
   });
 
-  it("should add game to collection successfully", async () => {
+  it("should remove game from collection successfully", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
-      status: GameStatusEnum.WISHLIST,
-    };
-
-    const expectedUserGame = {
-      id: "user-game-1",
-      ...payload,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    userGameService.findUserGame.mockResolvedValue(undefined);
-    userGameService.addUserGame.mockResolvedValue(expectedUserGame);
-
-    const result = await addToCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toEqual(expectedUserGame);
-    expect(userGameService.findUserGame).toHaveBeenCalledWith(
-      mockUser.id,
-      mockGame.externalId
-    );
-    expect(userGameService.addUserGame).toHaveBeenCalledWith(payload);
-  });
-
-  it("should return error if game is already in collection", async () => {
-    const payload = {
-      userId: mockUser.id,
-      gameExternalId: mockGame.externalId,
-      status: GameStatusEnum.WISHLIST,
     };
 
     const existingUserGame = {
-      id: "existing-user-game",
-      ...payload,
+      id: "user-game-1",
+      userId: mockUser.id,
+      gameExternalId: mockGame.externalId,
+      status: GameStatusEnum.WISHLIST,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     userGameService.findUserGame.mockResolvedValue(existingUserGame);
+    userGameService.removeUserGame.mockResolvedValue(undefined);
 
-    const result = await addToCollection({
+    const result = await removeFromCollection({
+      dependencies: { userGameService },
+      payload,
+    });
+
+    expect(result).toBeUndefined();
+    expect(userGameService.findUserGame).toHaveBeenCalledWith(
+      mockUser.id,
+      mockGame.externalId
+    );
+    expect(userGameService.removeUserGame).toHaveBeenCalledWith(
+      mockUser.id,
+      mockGame.externalId
+    );
+  });
+
+  it("should return error if game is not in collection", async () => {
+    const payload = {
+      userId: mockUser.id,
+      gameExternalId: mockGame.externalId,
+    };
+
+    userGameService.findUserGame.mockResolvedValue(undefined);
+
+    const result = await removeFromCollection({
       dependencies: { userGameService },
       payload,
     });
@@ -79,40 +75,38 @@ describe("Add To Collection Use Case", () => {
       mockUser.id,
       mockGame.externalId
     );
-    expect(userGameService.addUserGame).not.toHaveBeenCalled();
+    expect(userGameService.removeUserGame).not.toHaveBeenCalled();
   });
 
   it("should return error when userId is empty", async () => {
     const payload = {
       userId: "",
       gameExternalId: mockGame.externalId,
-      status: GameStatusEnum.WISHLIST,
     };
 
-    const result = await addToCollection({
+    const result = await removeFromCollection({
       dependencies: { userGameService },
       payload,
     });
 
     expect(result).toBeInstanceOf(Error);
     expect(userGameService.findUserGame).not.toHaveBeenCalled();
-    expect(userGameService.addUserGame).not.toHaveBeenCalled();
+    expect(userGameService.removeUserGame).not.toHaveBeenCalled();
   });
 
   it("should return error when gameExternalId is empty", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: "",
-      status: GameStatusEnum.WISHLIST,
     };
 
-    const result = await addToCollection({
+    const result = await removeFromCollection({
       dependencies: { userGameService },
       payload,
     });
 
     expect(result).toBeInstanceOf(Error);
     expect(userGameService.findUserGame).not.toHaveBeenCalled();
-    expect(userGameService.addUserGame).not.toHaveBeenCalled();
+    expect(userGameService.removeUserGame).not.toHaveBeenCalled();
   });
 });
