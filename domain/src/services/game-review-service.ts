@@ -8,4 +8,17 @@ export interface GameReviewService {
   create: (
     data: Omit<GameReview, "id" | "createdAt" | "updatedAt">
   ) => Promise<GameReview>;
+  getById: (id: string) => Promise<GameReview | undefined>;
+  update: ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: Partial<
+      Omit<
+        GameReview,
+        "id" | "createdAt" | "updatedAt" | "userId" | "gameExternalId"
+      >
+    >;
+  }) => Promise<GameReview>;
 }
