@@ -22,4 +22,5 @@ export interface GameReviewService {
     >;
   }) => Promise<GameReview>;
   delete: (reviewId: string) => Promise<boolean>;
+  getGameReviews: (gameId: string) => Promise<GameReview[]>;
 }
