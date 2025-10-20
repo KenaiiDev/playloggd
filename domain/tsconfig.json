@@ -11,6 +11,7 @@
     "skipLibCheck": true,
     "declaration": true,
     "baseUrl": ".",
+    "composite": true,
     "paths": {
       "@/*": ["src/*"],
       "@entities/*": ["src/entities/*"],

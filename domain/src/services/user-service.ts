@@ -19,9 +19,7 @@ export interface UserService {
     user: string;
     data: Partial<
       Omit<User, "id" | "createdAt" | "updatedAt" | "passwordHash">
-    > & {
-      password?: string;
-    };
+    >;
   }) => Promise<User>;
   deleteUser: (userId: string) => Promise<boolean>;
 }
