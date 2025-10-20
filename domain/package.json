@@ -1,5 +1,5 @@
 {
-  "name": "domain",
+  "name": "@playloggd/domain",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -7,14 +7,22 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm exec tsc --noEmit && rm -rf dist && pnpm exec tsc",
+    "build:verbose": "tsc --listFiles",
     "test": "vitest",
     "test:watch": "vitest watch",
-    "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "Lucas Villanueva",
   "license": "ISC",
-  "packageManager": "pnpm@10.18.0"
+  "packageManager": "pnpm@10.18.0",
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "vitest-mock-extended": "^3.1.0"
+  }
 }
