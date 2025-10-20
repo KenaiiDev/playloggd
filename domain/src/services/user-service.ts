@@ -22,4 +22,5 @@ export interface UserService {
     >;
   }) => Promise<User>;
   deleteUser: (userId: string) => Promise<boolean>;
+  updatePassword: (userId: string, newPasswordHash: string) => Promise<boolean>;
 }
