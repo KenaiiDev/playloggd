@@ -15,6 +15,7 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
       "@utils": resolve(__dirname, "./src/utils"),
+      "@playloggd/domain": resolve(__dirname, "../../domain/src"),
     },
   },
 });
