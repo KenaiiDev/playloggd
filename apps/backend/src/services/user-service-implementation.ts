@@ -86,4 +86,20 @@ export class UserServiceImplementation implements UserService {
 
     return deletedUser ? true : false;
   }
+
+  async updatePassword(
+    userId: string,
+    newPasswordHash: string
+  ): Promise<boolean> {
+    const newUser = await this.db.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        passwordHash: newPasswordHash,
+      },
+    });
+
+    return newUser ? true : false;
+  }
 }

@@ -265,4 +265,40 @@ describe("UserServiceImplementation", () => {
       );
     });
   });
+
+  describe("updatePassword", () => {
+    it("should update the password when valid data is provided", async () => {
+      const userId = "123";
+      const hashedPassword = "hashedNewPassword";
+
+      mockPrisma.user.update.mockResolvedValue({
+        id: userId,
+        passwordHash: hashedPassword,
+      });
+
+      const result = await userService.updatePassword(userId, hashedPassword);
+
+      expect(result).toBe(true);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: { passwordHash: hashedPassword },
+      });
+    });
+
+    it("should return false if the user does not exist", async () => {
+      const userId = "123";
+      const hashedPassword = "hashedNewPassword";
+
+      mockPrisma.user.update.mockResolvedValue(null);
+
+      const result = await userService.updatePassword(userId, hashedPassword);
+
+      expect(result).toBe(false);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: { passwordHash: hashedPassword },
+      });
+    });
+  });
 });
