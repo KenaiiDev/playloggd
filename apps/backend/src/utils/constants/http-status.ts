@@ -10,3 +10,7 @@ export const HttpStatus = {
   UNPROCESSABLE_ENTITY: 422,
   INTERNAL_SERVER_ERROR: 500,
 } as const;
+
+export const HttpStatusReverse = Object.fromEntries(
+  Object.entries(HttpStatus).map(([key, value]) => [value, key])
+) as Record<number, keyof typeof HttpStatus>;

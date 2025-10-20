@@ -56,6 +56,19 @@ export const httpResponse = {
     });
   },
 
+  CONFLICT: <ErrorType>(
+    res: CustomResponseMessageError<ErrorType>,
+    message: string,
+    error: ErrorType
+  ) => {
+    return res.status(HttpStatus.CONFLICT).json({
+      status: HttpStatus.CONFLICT,
+      statusMsg: "Conflict",
+      message,
+      error,
+    });
+  },
+
   INTERNAL_SERVER_ERROR: <ErrorType>(
     res: CustomResponseMessageError<ErrorType>,
     message: string,
