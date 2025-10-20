@@ -17,6 +17,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.18.0",
   "dependencies": {
+    "@prisma/client": "^6.17.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
@@ -29,6 +30,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.6.2",
     "@types/supertest": "^6.0.3",
+    "prisma": "^6.17.1",
     "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",

@@ -16,3 +16,11 @@ build/
 
 # IDE and editor files
 .vscode/
+
+# Database
+*.db
+*.db-journal
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
