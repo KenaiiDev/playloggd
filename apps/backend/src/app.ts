@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { errorHandler } from "./middleware/error-handler";
 
 export const app = express();
 
@@ -10,7 +11,4 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.use((err: Error, _req: express.Request, res: express.Response) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong!" });
-});
+app.use(errorHandler);
