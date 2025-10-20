@@ -41,6 +41,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@playloggd/domain':
+        specifier: workspace:*
+        version: link:../../domain
       '@prisma/client':
         specifier: ^6.17.1
         version: 6.17.1(prisma@6.17.1(typescript@5.9.3))(typescript@5.9.3)
@@ -94,7 +97,20 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.6.2)(jiti@2.6.1)(tsx@4.20.6)
 
-  domain: {}
+  domain:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.6.2
+        version: 24.6.2
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.6.2)(jiti@2.6.1)(tsx@4.20.6)
+      vitest-mock-extended:
+        specifier: ^3.1.0
+        version: 3.1.0(typescript@5.9.3)(vitest@3.2.4(@types/node@24.6.2)(jiti@2.6.1)(tsx@4.20.6))
 
 packages:
 
