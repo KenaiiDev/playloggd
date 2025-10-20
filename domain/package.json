@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
+  "private": true,
   "type": "module",
   "scripts": {
     "test": "vitest",
