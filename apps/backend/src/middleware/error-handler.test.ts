@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest";
 import { Request, Response } from "express";
 import { errorHandler } from "./error-handler";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ZodError, ZodIssueCode } from "zod";
 
 describe("Error Handler Middleware", () => {
   let mockRequest: Request;
@@ -62,6 +63,29 @@ describe("Error Handler Middleware", () => {
       status: 404,
       statusMsg: "Not Found",
       message: "Record not found",
+    });
+  });
+
+  it("should handle Zod validation error with 400 status", () => {
+    const error = new ZodError([
+      {
+        path: ["username"],
+        message: "Username must be at least 3 characters long",
+        code: ZodIssueCode.too_small,
+        minimum: 3,
+        inclusive: true,
+        origin: "value",
+      },
+    ]);
+
+    errorHandler(error, mockRequest, mockResponse);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(400);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      status: 400,
+      statusMsg: "Bad Request",
+      message: "Error de validación",
+      error: error.issues,
     });
   });
 });
