@@ -3,12 +3,43 @@ import { UserController } from "../controllers/user-controller";
 import { UserServiceImplementation } from "../services/user-service-implementation";
 import { PrismaClient } from "@prisma/client";
 import { BcryptAdapter } from "../adapters/bcrypt-adapter";
+import { AuthServiceImplementation } from "@/services/auth-service-implementation";
+import { JwtAdapter } from "@/adapters/jwt-adapter";
 
 const router = Router();
 const prisma = new PrismaClient();
 const passwordHasher = new BcryptAdapter();
 const userService = new UserServiceImplementation(prisma, passwordHasher);
-const userController = new UserController(userService);
+
+if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_ACCESS_EXPIRES) {
+  throw new Error(
+    "Environment variables JWT_ACCESS_SECRET and JWT_ACCESS_EXPIRES must be defined"
+  );
+}
+
+if (!process.env.JWT_REFRESH_SECRET || !process.env.JWT_REFRESH_EXPIRES) {
+  throw new Error(
+    "Environment variables JWT_REFRESH_SECRET and JWT_REFRESH_EXPIRES must be defined"
+  );
+}
+
+const accessSecret = process.env.JWT_ACCESS_SECRET;
+const accessExpires = process.env.JWT_ACCESS_EXPIRES;
+
+const refreshSecret = process.env.JWT_REFRESH_SECRET;
+const refreshExpires = process.env.JWT_REFRESH_EXPIRES;
+
+const accessTokenManager = new JwtAdapter(accessSecret, accessExpires);
+const refreshTokenManager = new JwtAdapter(refreshSecret, refreshExpires);
+
+const authService = new AuthServiceImplementation(
+  passwordHasher,
+  accessTokenManager,
+  refreshTokenManager,
+  userService
+);
+
+const userController = new UserController(userService, authService);
 
 // Define routes
 router.post("/users", (req, res, next) =>

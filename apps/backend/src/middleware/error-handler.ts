@@ -26,14 +26,13 @@ const ERROR_HANDLER = {
 export const errorHandler = (error: Error, _req: Request, res: Response) => {
   let option: string | undefined;
 
+  console.log({ option });
+
   if (error instanceof PrismaClientKnownRequestError) {
     option = error.code;
   } else if (error instanceof ZodError) {
     option = "ZOD_ERROR";
-    console.log("ZODERROR");
   }
-
-  console.log({ option });
 
   const handler =
     ERROR_HANDLER[option as keyof typeof ERROR_HANDLER] ??

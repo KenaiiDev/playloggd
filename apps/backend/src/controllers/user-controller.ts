@@ -1,18 +1,42 @@
 import { NextFunction, Request, Response } from "express";
-import { UserServiceImplementation } from "../services/user-service-implementation";
+import {
+  register,
+  getUsers,
+  getUsersByEmail,
+  deleteAccount,
+  updateProfile,
+} from "@playloggd/domain";
 import { httpResponse } from "../utils/http-response";
+import { UserServiceImplementation } from "@/services/user-service-implementation";
+import { AuthServiceImplementation } from "@/services/auth-service-implementation";
 
 export class UserController {
   private userService: UserServiceImplementation;
+  private authService: AuthServiceImplementation;
 
-  constructor(userService: UserServiceImplementation) {
+  constructor(
+    userService: UserServiceImplementation,
+    authService: AuthServiceImplementation
+  ) {
     this.userService = userService;
+    this.authService = authService;
   }
 
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await this.userService.create(req.body);
-      return httpResponse.CREATED(res, user);
+      const result = await register({
+        dependencies: {
+          userService: this.userService,
+          authService: this.authService,
+        },
+        payload: req.body,
+      });
+
+      if (result instanceof Error) {
+        return httpResponse.BAD_REQUEST(res, result.message, { error: result });
+      }
+
+      return httpResponse.CREATED(res, result);
     } catch (error) {
       next(error);
     }
@@ -20,11 +44,16 @@ export class UserController {
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await this.userService.getById(req.params.id);
-      if (!user) {
-        return httpResponse.NOT_FOUND(res, "User not found");
+      const result = await getUsers({
+        dependencies: { userService: this.userService },
+        payload: { id: req.params.id },
+      });
+
+      if (!result) {
+        return httpResponse.NOT_FOUND(res, "No user found");
       }
-      return httpResponse.OK(res, user);
+
+      return httpResponse.OK(res, result);
     } catch (error) {
       next(error);
     }
@@ -32,26 +61,16 @@ export class UserController {
 
   async getUserByEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await this.userService.getByEmail(req.params.email);
-      if (!user) {
-        return httpResponse.NOT_FOUND(res, "User not found");
-      }
-      return httpResponse.OK(res, user);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async updateUser(req: Request, res: Response, next: NextFunction) {
-    try {
-      const newUser = await this.userService.update({
-        user: req.params.id,
-        data: {
-          ...req.body,
-        },
+      const result = await getUsersByEmail({
+        dependencies: { userService: this.userService },
+        payload: { email: req.params.email },
       });
 
-      return httpResponse.OK(res, newUser);
+      if (result instanceof Error) {
+        return httpResponse.NOT_FOUND(res, result.message);
+      }
+
+      return httpResponse.OK(res, result);
     } catch (error) {
       next(error);
     }
@@ -59,9 +78,44 @@ export class UserController {
 
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const deletedUser = await this.userService.deleteUser(req.params.id);
-      if (!deletedUser) return httpResponse.NOT_FOUND(res, "User not found");
-      if (deletedUser) return httpResponse.OK(res, "User deleted successfully");
+      const result = await deleteAccount({
+        dependencies: {
+          userService: this.userService,
+          authService: this.authService,
+        },
+        payload: {
+          userId: req.params.id,
+          password: req.body.password,
+        },
+      });
+
+      console.log({ result });
+
+      if (result instanceof Error) {
+        return httpResponse.BAD_REQUEST(res, result.message, { error: result });
+      }
+
+      return httpResponse.OK(res, "User deleted successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await updateProfile({
+        dependencies: { userService: this.userService },
+        payload: {
+          user: req.params.id,
+          data: req.body,
+        },
+      });
+
+      if (result instanceof Error) {
+        return httpResponse.BAD_REQUEST(res, result.message, { error: result });
+      }
+
+      return httpResponse.OK(res, result);
     } catch (error) {
       next(error);
     }

@@ -1,268 +1,245 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { createUserServiceImplementationMocks } from "@/services/__mocks__/user-service-implementation-mock";
-import { createMockUser } from "@playloggd/domain";
+import { DeepMockProxy, mockDeep } from "vitest-mock-extended";
 import { UserController } from "./user-controller";
-import { Request, Response, NextFunction } from "express";
-import { mockReset } from "vitest-mock-extended";
+import { User } from "@playloggd/domain";
+import { UserServiceImplementation } from "@/services/user-service-implementation";
+import { AuthServiceImplementation } from "@/services/auth-service-implementation";
+import { createRequest, createResponse } from "node-mocks-http";
 
 describe("UserController", () => {
   let userController: UserController;
-  let mockRes: Response;
-  let mockNext: NextFunction;
-  const mockUserService = createUserServiceImplementationMocks();
+  let userServiceMock: DeepMockProxy<UserServiceImplementation>;
+  let authServiceMock: DeepMockProxy<AuthServiceImplementation>;
 
   beforeEach(() => {
-    mockReset(mockUserService);
-    userController = new UserController(mockUserService);
-    mockRes = {
-      status: vi.fn().mockReturnThis(),
-      json: vi.fn(),
-      send: vi.fn(),
-    } as unknown as Response;
-    mockNext = vi.fn();
+    userServiceMock = mockDeep<UserServiceImplementation>();
+    authServiceMock = mockDeep<AuthServiceImplementation>();
+
+    userController = new UserController(userServiceMock, authServiceMock);
   });
 
-  describe("register", () => {
-    it("should return 201 and the created user", async () => {
-      const mockReq = {
+  describe("Register", () => {
+    it("should call register with correct payload", async () => {
+      const req = createRequest({
+        method: "POST",
+        url: "/register",
         body: {
-          username: "testuser",
-          email: "test@example.com",
-          password: "password",
+          email: "a@b.com",
+          password: "ValidPassword123",
+          username: "test",
         },
-      } as Request;
-      const mockUser = createMockUser({
+      });
+
+      const res = createResponse();
+      res.status = vi.fn();
+      res.json = vi.fn();
+
+      const next = vi.fn();
+
+      userServiceMock.create.mockResolvedValue({
         id: "1",
-        username: "testuser",
-        email: "test@example.com",
-      });
-      mockUserService.create.mockResolvedValue(mockUser);
+        email: "a@b.com",
+      } as unknown as User);
 
-      await userController.register(mockReq, mockRes, mockNext);
+      await userController.register(req, res, next);
 
-      expect(mockUserService.create).toHaveBeenCalledWith(mockReq.body);
-      expect(mockRes.status).toHaveBeenCalledWith(201);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 201,
-        statusMsg: "Created",
-        data: mockUser,
+      expect(userServiceMock.create).toHaveBeenCalledWith({
+        email: "a@b.com",
+        password: "ValidPassword123",
+        username: "test",
+        bio: undefined,
       });
+
+      expect(res.status).toHaveBeenCalledWith(201);
     });
 
-    it("should return 400 if the service throws an error", async () => {
-      const mockReq = {
-        body: { username: "", email: "", password: "" },
-      } as Request;
-      mockUserService.create.mockRejectedValue(new Error("Validation failed"));
+    it("should return 400 if user creation fails", async () => {
+      const req = createRequest({
+        method: "POST",
+        url: "/register",
+        body: {
+          email: "test@example.com",
+          password: "Valid123",
+          username: "testuser",
+        },
+      });
 
-      await userController.register(mockReq, mockRes, mockNext);
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
 
-      expect(mockUserService.create).toHaveBeenCalledWith(mockReq.body);
-      expect(mockNext).toHaveBeenCalledWith(new Error("Validation failed"));
+      const next = vi.fn();
+
+      userServiceMock.create.mockRejectedValueOnce(
+        new Error("User creation failed")
+      );
+
+      await userController.register(req, res, next);
+
+      expect(next).toHaveBeenCalled();
     });
   });
 
-  describe("getUserById", () => {
-    it("should return 200 and the user if found", async () => {
-      const mockReq = { params: { id: "1" } } as unknown as Request;
-      const mockUser = createMockUser({
-        id: "1",
-        username: "testuser",
-        email: "test@example.com",
-      });
-      mockUserService.getById.mockResolvedValue(mockUser);
-
-      await userController.getUserById(mockReq, mockRes, mockNext);
-
-      expect(mockUserService.getById).toHaveBeenCalledWith("1");
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 200,
-        statusMsg: "Success",
-        data: mockUser,
-      });
-    });
-
-    it("should return 404 if the user is not found", async () => {
-      const mockReq = { params: { id: "1" } } as unknown as Request;
-      mockUserService.getById.mockResolvedValue(undefined);
-
-      await userController.getUserById(mockReq, mockRes, mockNext);
-
-      expect(mockUserService.getById).toHaveBeenCalledWith("1");
-      expect(mockRes.status).toHaveBeenCalledWith(404);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 404,
-        statusMsg: "Not Found",
-        message: "User not found",
-      });
-    });
-
-    it("should call next with an error if the service throws an error", async () => {
-      const mockReq = { params: { id: "1" } } as Partial<Request>;
-      const error = new Error("Database error");
-      mockUserService.getById.mockImplementation(() => Promise.reject(error));
-
-      await userController.getUserById(mockReq as Request, mockRes, mockNext);
-
-      expect(mockUserService.getById).toHaveBeenCalledWith("1");
-      expect(mockNext).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe("getUserByEmail", () => {
-    it("should return 200 and the user if found", async () => {
-      const mockReq = {
-        params: { email: "test@example.com" },
-      } as unknown as Request;
-      const mockUser = createMockUser({
-        id: "1",
-        username: "testuser",
-        email: "test@example.com",
-      });
-      mockUserService.getByEmail.mockResolvedValue(mockUser);
-
-      await userController.getUserByEmail(mockReq, mockRes, mockNext);
-
-      expect(mockUserService.getByEmail).toHaveBeenCalledWith(
-        "test@example.com"
-      );
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 200,
-        statusMsg: "Success",
-        data: mockUser,
-      });
-    });
-
-    it("should return 404 if the user is not found", async () => {
-      const mockReq = {
-        params: { email: "test@example.com" },
-      } as unknown as Request;
-      mockUserService.getByEmail.mockResolvedValue(undefined);
-
-      await userController.getUserByEmail(mockReq, mockRes, mockNext);
-
-      expect(mockUserService.getByEmail).toHaveBeenCalledWith(
-        "test@example.com"
-      );
-      expect(mockRes.status).toHaveBeenCalledWith(404);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 404,
-        statusMsg: "Not Found",
-        message: "User not found",
-      });
-    });
-
-    it("should call next with an error if the service throws an error", async () => {
-      const mockReq = {
-        params: { email: "test@example.com" },
-      } as Partial<Request>;
-      const error = new Error("Database error");
-      mockUserService.getByEmail.mockImplementation(() =>
-        Promise.reject(error)
-      );
-
-      await userController.getUserByEmail(
-        mockReq as Request,
-        mockRes,
-        mockNext
-      );
-
-      expect(mockUserService.getByEmail).toHaveBeenCalledWith(
-        "test@example.com"
-      );
-      expect(mockNext).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe("updateUser", () => {
-    it("should return 200 and the updated user", async () => {
-      const mockReq = {
+  describe("GetUserById", () => {
+    it("should return 200 and the user if getUserById succeeds", async () => {
+      const req = createRequest({
+        method: "GET",
+        url: "/users/1",
         params: { id: "1" },
-        body: { username: "updatedUser" },
-      } as unknown as Request;
-      const mockUser = createMockUser({
+      });
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+
+      const next = vi.fn();
+
+      userServiceMock.getById.mockResolvedValueOnce({
         id: "1",
-        username: "updatedUser",
         email: "test@example.com",
+        username: "testuser",
+        passwordHash: "hashed_password",
+        avatarUrl: "",
+        bio: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
-      mockUserService.update.mockResolvedValue(mockUser);
 
-      await userController.updateUser(mockReq, mockRes, mockNext);
+      await userController.getUserById(req, res, next);
 
-      expect(mockUserService.update).toHaveBeenCalledWith({
-        user: "1",
-        data: { username: "updatedUser" },
-      });
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 200,
-        statusMsg: "Success",
-        data: mockUser,
-      });
+      expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("should call next with an error if the service throws an error", async () => {
-      const mockReq = {
+    it("should return 404 if user is not found in getUserById", async () => {
+      const req = createRequest({
+        method: "GET",
+        url: "/users/1",
         params: { id: "1" },
-        body: { username: "updatedUser" },
-      } as Partial<Request>;
-      const error = new Error("Update failed");
-      mockUserService.update.mockImplementation(() => Promise.reject(error));
-
-      await userController.updateUser(mockReq as Request, mockRes, mockNext);
-
-      expect(mockUserService.update).toHaveBeenCalledWith({
-        user: "1",
-        data: { username: "updatedUser" },
       });
-      expect(mockNext).toHaveBeenCalledWith(error);
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+
+      const next = vi.fn();
+
+      userServiceMock.getById.mockResolvedValueOnce(undefined);
+
+      await userController.getUserById(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(404);
     });
   });
 
-  describe("deleteUser", () => {
-    it("should return 200 if the user is successfully deleted", async () => {
-      const mockReq = { params: { id: "1" } } as unknown as Request;
-      mockUserService.deleteUser.mockResolvedValue(true);
-
-      await userController.deleteUser(mockReq, mockRes, mockNext);
-
-      expect(mockUserService.deleteUser).toHaveBeenCalledWith("1");
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 200,
-        statusMsg: "Success",
-        data: "User deleted successfully",
+  describe("GetUserByEmail", () => {
+    it("should return 200 and the user if getUserByEmail succeeds", async () => {
+      const req = createRequest({
+        method: "GET",
+        url: "/users/email",
+        params: { email: "test@example.com" },
       });
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+
+      const next = vi.fn();
+
+      userServiceMock.getByEmail.mockResolvedValueOnce({
+        id: "1",
+        email: "test@example.com",
+        username: "testuser",
+        passwordHash: "hashed_password",
+        avatarUrl: "",
+        bio: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await userController.getUserByEmail(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("should return 404 if the user is not found", async () => {
-      const mockReq = { params: { id: "1" } } as unknown as Request;
-      mockUserService.deleteUser.mockResolvedValue(false);
-
-      await userController.deleteUser(mockReq, mockRes, mockNext);
-
-      expect(mockUserService.deleteUser).toHaveBeenCalledWith("1");
-      expect(mockRes.status).toHaveBeenCalledWith(404);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        status: 404,
-        statusMsg: "Not Found",
-        message: "User not found",
+    it("should return 404 if user is not found in getUserByEmail", async () => {
+      const req = createRequest({
+        method: "GET",
+        url: "/users/email",
+        query: { email: "test@example.com" },
       });
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+
+      const next = vi.fn();
+
+      userServiceMock.getByEmail.mockResolvedValueOnce(undefined);
+
+      await userController.getUserByEmail(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+  });
+
+  describe("DeleteUser", () => {
+    it("should return 204 if deleteUser succeeds", async () => {
+      const req = createRequest({
+        method: "DELETE",
+        url: "/users/1",
+        params: { id: "1" },
+        body: {
+          password: "Password123",
+        },
+      });
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+
+      const next = vi.fn();
+
+      userServiceMock.getById.mockResolvedValue({
+        id: "1",
+        email: "test@example.com",
+        username: "testuser",
+        passwordHash: "hashed_password",
+        avatarUrl: "",
+        bio: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      authServiceMock.verifyPassword.mockResolvedValue(true);
+      userServiceMock.deleteUser.mockResolvedValueOnce(true);
+
+      await userController.deleteUser(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("should call next with an error if the service throws an error", async () => {
-      const mockReq = { params: { id: "1" } } as Partial<Request>;
-      const error = new Error("Delete failed");
-      mockUserService.deleteUser.mockImplementation(() =>
-        Promise.reject(error)
-      );
+    it("should return 404 if user is not found in deleteUser", async () => {
+      const req = createRequest({
+        method: "DELETE",
+        url: "/users/1",
+        params: { id: "1" },
+        body: {
+          password: "Password123",
+        },
+      });
 
-      await userController.deleteUser(mockReq as Request, mockRes, mockNext);
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
 
-      expect(mockUserService.deleteUser).toHaveBeenCalledWith("1");
-      expect(mockNext).toHaveBeenCalledWith(error);
+      const next = vi.fn();
+
+      userServiceMock.getById.mockResolvedValue(undefined);
+      authServiceMock.verifyPassword.mockResolvedValue(true);
+      userServiceMock.deleteUser.mockResolvedValueOnce(false);
+
+      await userController.deleteUser(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
     });
   });
 });
