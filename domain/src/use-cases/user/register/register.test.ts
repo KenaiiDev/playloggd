@@ -1,12 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
 
-import { createUserServiceMock } from "@/services/__mocks__";
+import {
+  createAuthServiceMock,
+  createUserServiceMock,
+} from "@/services/__mocks__";
 import { createMockUser } from "@/entities/__mocks__";
 import { register } from "./register";
 
 describe("Register", () => {
   const userService = createUserServiceMock();
+  const authService = createAuthServiceMock();
 
   beforeEach(() => {
     mockReset(userService);
@@ -31,7 +35,7 @@ describe("Register", () => {
     userService.create.mockResolvedValue(expectedUser);
 
     const result = await register({
-      dependencies: { userService },
+      dependencies: { userService, authService },
       payload: userData,
     });
 
@@ -123,8 +127,12 @@ describe("Register", () => {
       password: "short",
     };
 
+    authService.validatePassword.mockReturnValue(
+      new Error("Password must be at least 8 characters long")
+    );
+
     const result = await register({
-      dependencies: { userService },
+      dependencies: { userService, authService },
       payload: userData,
     });
 
@@ -144,8 +152,12 @@ describe("Register", () => {
       password: "password123",
     };
 
+    authService.validatePassword.mockReturnValue(
+      new Error("Password must contain at least one uppercase letter")
+    );
+
     const result = await register({
-      dependencies: { userService },
+      dependencies: { userService, authService },
       payload: userData,
     });
 
@@ -165,8 +177,12 @@ describe("Register", () => {
       password: "PASSWORD123",
     };
 
+    authService.validatePassword.mockReturnValue(
+      new Error("Password must contain at least one lowercase letter")
+    );
+
     const result = await register({
-      dependencies: { userService },
+      dependencies: { userService, authService },
       payload: userData,
     });
 
@@ -186,8 +202,12 @@ describe("Register", () => {
       password: "PasswordNoNumbers",
     };
 
+    authService.validatePassword.mockReturnValue(
+      new Error("Password must contain at least one number")
+    );
+
     const result = await register({
-      dependencies: { userService },
+      dependencies: { userService, authService },
       payload: userData,
     });
 

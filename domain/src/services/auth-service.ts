@@ -25,4 +25,5 @@ export interface AuthService {
     currentPassword: string;
     newPassword: string;
   }) => Promise<boolean>;
+  validatePassword: (password: string) => Error | null;
 }

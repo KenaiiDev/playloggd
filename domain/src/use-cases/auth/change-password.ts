@@ -1,5 +1,4 @@
 import { AuthService } from "@/services";
-import { validatePassword } from "@/utils";
 
 interface ChangePasswordProps {
   dependencies: {
@@ -22,7 +21,9 @@ export async function changePassword({
     return new Error("Current password is required");
 
   if (!payload.newPassword) return new Error("New password is required");
-  const passwordError = validatePassword(payload.newPassword);
+  const passwordError = dependencies.authService.validatePassword(
+    payload.newPassword
+  );
   if (passwordError) return passwordError;
 
   try {

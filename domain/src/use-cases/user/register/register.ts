@@ -1,7 +1,7 @@
-import { UserService } from "@/services";
-import { validatePassword } from "@/utils";
+import { AuthService, UserService } from "@/services";
+
 interface registerParams {
-  dependencies: { userService: UserService };
+  dependencies: { userService: UserService; authService?: AuthService };
   payload: {
     username: string;
     email: string;
@@ -15,7 +15,9 @@ export async function register({ dependencies, payload }: registerParams) {
   if (!payload.password) return new Error("Password is required");
   if (!payload.username) return new Error("Username is required");
 
-  const passwordError = validatePassword(payload.password);
+  const passwordError = dependencies.authService?.validatePassword(
+    payload.password
+  );
   if (passwordError) return new Error(passwordError.message);
 
   const existingUser = await dependencies.userService.getByEmail(payload.email);

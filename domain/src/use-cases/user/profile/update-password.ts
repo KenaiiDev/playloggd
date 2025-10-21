@@ -1,6 +1,5 @@
 import { UserService } from "@/services/user-service";
 import { AuthService } from "@/services/auth-service";
-import { validatePassword } from "@/utils/validators";
 
 interface UpdatePasswordParams {
   dependencies: {
@@ -23,8 +22,7 @@ export async function updatePassword({
   if (!userId.trim()) return new Error("User ID is required");
   if (!currentPassword.trim()) return new Error("Current password is required");
   if (!newPassword.trim()) return new Error("New password is required");
-
-  if (!validatePassword(newPassword)) {
+  if (dependencies.authService.validatePassword(newPassword)) {
     return new Error("New password does not meet security requirements");
   }
 

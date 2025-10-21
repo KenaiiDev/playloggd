@@ -110,6 +110,10 @@ describe("Change Password Use Case", () => {
         newPassword: "short",
       };
 
+      authService.validatePassword.mockReturnValue(
+        new Error("Password must be at least 8 characters long")
+      );
+
       const result = await changePassword({
         dependencies: { authService },
         payload,
@@ -130,6 +134,10 @@ describe("Change Password Use Case", () => {
         currentPassword: "oldPassword123",
         newPassword: "password123",
       };
+
+      authService.validatePassword.mockReturnValue(
+        new Error("Password must contain at least one uppercase letter")
+      );
 
       const result = await changePassword({
         dependencies: { authService },
@@ -152,6 +160,10 @@ describe("Change Password Use Case", () => {
         newPassword: "PASSWORD123",
       };
 
+      authService.validatePassword.mockReturnValue(
+        new Error("Password must contain at least one lowercase letter")
+      );
+
       const result = await changePassword({
         dependencies: { authService },
         payload,
@@ -172,6 +184,10 @@ describe("Change Password Use Case", () => {
         currentPassword: "oldPassword123",
         newPassword: "PasswordNoNumbers",
       };
+
+      authService.validatePassword.mockReturnValue(
+        new Error("Password must contain at least one number")
+      );
 
       const result = await changePassword({
         dependencies: { authService },

@@ -17,7 +17,7 @@ describe("Update password", () => {
   it("Should update the password when valid data is provided", async () => {
     const userId = "123";
     const currentPassword = "oldPassword";
-    const newPassword = "newPassword";
+    const newPassword = "newPassword123";
     const user = createMockUser({
       id: userId,
       passwordHash: "hashedOldPassword",
@@ -26,6 +26,7 @@ describe("Update password", () => {
     userService.getById.mockResolvedValue(user);
     authService.verifyPassword.mockResolvedValue(true);
     userService.updatePassword.mockResolvedValue(true);
+    authService.validatePassword.mockReturnValue(null);
 
     const result = await updatePassword({
       dependencies: { userService, authService },
