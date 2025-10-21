@@ -1,4 +1,4 @@
-import { AuthService, validatePassword } from "@playloggd/domain";
+import { AuthService } from "@playloggd/domain";
 import { PasswordHasher } from "@/adapters/password-hasher";
 import { TokenManager } from "@/adapters/token-manager";
 import { UserServiceImplementation } from "./user-service-implementation";
@@ -84,12 +84,32 @@ export class AuthServiceImplementation implements AuthService {
     );
     if (!isPasswordValid) throw new Error("Current password is incorrect");
 
-    const passwordError = validatePassword(newPassword);
+    const passwordError = this.validatePassword(newPassword);
     if (passwordError) throw new Error(passwordError.message);
 
     const newPasswordHash = await this.PasswordHasher.hash(newPassword);
     await this.userService.updatePassword(userId, newPasswordHash);
 
     return true;
+  }
+
+  validatePassword(password: string): Error | null {
+    if (password.length < 8) {
+      return new Error("Password must be at least 8 characters long");
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return new Error("Password must contain at least one uppercase letter");
+    }
+
+    if (!/[a-z]/.test(password)) {
+      return new Error("Password must contain at least one lowercase letter");
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return new Error("Password must contain at least one number");
+    }
+
+    return null;
   }
 }

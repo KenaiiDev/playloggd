@@ -111,7 +111,6 @@ describe("AuthServiceImplementation", () => {
       jwtAdapter.getExpiration.mockReturnValue(3600);
 
       const result = await authService.refreshToken("validRefreshToken");
-      console.log({ result });
 
       expect(result).toStrictEqual({
         accessToken: "userId-newToken",
@@ -177,6 +176,41 @@ describe("AuthServiceImplementation", () => {
       expect(bcryptAdapter.compare).toHaveBeenCalledWith(
         "wrongPassword",
         "hashedPassword"
+      );
+    });
+  });
+
+  describe("validatePassword", () => {
+    it("should return null for a valid password", () => {
+      const result = authService.validatePassword("Valid123");
+      expect(result).toBeNull();
+    });
+
+    it("should return an error for a password that is too short", () => {
+      const result = authService.validatePassword("Short1");
+      expect(result).toEqual(
+        new Error("Password must be at least 8 characters long")
+      );
+    });
+
+    it("should return an error for a password without an uppercase letter", () => {
+      const result = authService.validatePassword("lowercase1");
+      expect(result).toEqual(
+        new Error("Password must contain at least one uppercase letter")
+      );
+    });
+
+    it("should return an error for a password without a lowercase letter", () => {
+      const result = authService.validatePassword("UPPERCASE1");
+      expect(result).toEqual(
+        new Error("Password must contain at least one lowercase letter")
+      );
+    });
+
+    it("should return an error for a password without a number", () => {
+      const result = authService.validatePassword("NoNumber");
+      expect(result).toEqual(
+        new Error("Password must contain at least one number")
       );
     });
   });
