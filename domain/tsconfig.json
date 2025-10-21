@@ -13,11 +13,7 @@
     "baseUrl": ".",
     "composite": true,
     "paths": {
-      "@/*": ["src/*"],
-      "@entities/*": ["src/entities/*"],
-      "@services/*": ["src/services/*"],
-      "@use-cases/*": ["src/use-cases/*"],
-      "@utils/*": ["src/utils/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src/**/*"],

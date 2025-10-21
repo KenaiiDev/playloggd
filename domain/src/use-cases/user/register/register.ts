@@ -1,6 +1,5 @@
 import { UserService } from "@/services";
 import { validatePassword } from "@/utils";
-
 interface registerParams {
   dependencies: { userService: UserService };
   payload: {

@@ -3,7 +3,7 @@ import { mockReset } from "vitest-mock-extended";
 import { createUserServiceMock } from "@/services/__mocks__";
 import { createAuthServiceMock } from "@/services/__mocks__/mock-auth-service";
 import { updatePassword } from "./update-password";
-import { createMockUser } from "@/entities";
+import { createMockUser } from "@/entities/__mocks__";
 
 describe("Update password", () => {
   const userService = createUserServiceMock();

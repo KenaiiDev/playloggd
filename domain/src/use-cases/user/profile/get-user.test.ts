@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
-import { createUserServiceMock } from "@services/__mocks__";
+import { createUserServiceMock } from "@/services/__mocks__";
 import { createMockUser } from "@/entities/__mocks__";
 import { getUsers, getUsersByEmail } from "./get-user";
 
