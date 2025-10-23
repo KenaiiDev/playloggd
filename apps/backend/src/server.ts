@@ -1,10 +1,6 @@
 import { app } from "./app";
 
-if (process.env.NODE_ENV === "test") {
-  process.loadEnvFile(".env.test");
-} else {
-  process.loadEnvFile();
-}
+process.loadEnvFile();
 
 const port = process.env.PORT || 3333;
 
