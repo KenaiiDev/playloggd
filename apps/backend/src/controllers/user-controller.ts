@@ -89,8 +89,6 @@ export class UserController {
         },
       });
 
-      console.log({ result });
-
       if (result instanceof Error) {
         return httpResponse.BAD_REQUEST(res, result.message, { error: result });
       }
