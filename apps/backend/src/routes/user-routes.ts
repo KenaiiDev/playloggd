@@ -1,10 +1,17 @@
 import { Router } from "express";
-import { UserController } from "../controllers/user-controller";
-import { UserServiceImplementation } from "../services/user-service-implementation";
-import { PrismaClient } from "@prisma/client";
-import { BcryptAdapter } from "../adapters/bcrypt-adapter";
+
+import { UserController } from "@/controllers/user-controller";
+
+import { UserServiceImplementation } from "@/services/user-service-implementation";
 import { AuthServiceImplementation } from "@/services/auth-service-implementation";
+
+import { PrismaClient } from "@prisma/client";
+
+import { BcryptAdapter } from "@/adapters/bcrypt-adapter";
 import { JwtAdapter } from "@/adapters/jwt-adapter";
+
+import { validateSchema } from "@/middleware/validate-schema";
+import { registerUserSchema } from "@/validations/user-schemas";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -41,8 +48,7 @@ const authService = new AuthServiceImplementation(
 
 const userController = new UserController(userService, authService);
 
-// Define routes
-router.post("/users", (req, res, next) =>
+router.post("/users", validateSchema(registerUserSchema), (req, res, next) =>
   userController.register(req, res, next)
 );
 router.get("/users/:id", (req, res, next) =>
