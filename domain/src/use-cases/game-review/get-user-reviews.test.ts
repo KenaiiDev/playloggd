@@ -36,34 +36,34 @@ describe("Get User Reviews Use Case", () => {
     mockReset(userService);
   });
 
-  it("should fail when userId is empty", async () => {
-    const result = await getUserReviews({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        userId: "",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+  it("should throw error when userId is empty", async () => {
+    await expect(
+      getUserReviews({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          userId: "",
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("should fail when user does not exist", async () => {
+  it("should throw error when user does not exist", async () => {
     userService.getById.mockResolvedValue(undefined);
 
-    const result = await getUserReviews({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        userId: "non-existent",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      getUserReviews({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          userId: "non-existent",
+        },
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith("non-existent");
     expect(userService.getById).toHaveBeenCalledOnce();
   });

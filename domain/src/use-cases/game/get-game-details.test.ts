@@ -30,27 +30,27 @@ describe("Get Game Details Use Case", () => {
     expect(gameService.getGameById).toHaveBeenCalledWith(gameId);
   });
 
-  it("should return error when game is not found", async () => {
+  it("should throw error when game is not found", async () => {
     const gameId = "non-existent-game";
     gameService.getGameById.mockResolvedValue(undefined);
 
-    const result = await getGameDetails({
-      dependencies: { gameService },
-      payload: { gameId },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      getGameDetails({
+        dependencies: { gameService },
+        payload: { gameId },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("should return error when gameId is empty", async () => {
+  it("should throw error when gameId is empty", async () => {
     const gameId = "";
 
-    const result = await getGameDetails({
-      dependencies: { gameService },
-      payload: { gameId },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      getGameDetails({
+        dependencies: { gameService },
+        payload: { gameId },
+      })
+    ).rejects.toThrow(Error);
     expect(gameService.getGameById).not.toHaveBeenCalled();
   });
 });

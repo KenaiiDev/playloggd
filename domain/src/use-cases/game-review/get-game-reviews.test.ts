@@ -36,34 +36,34 @@ describe("Get Game Reviews Use Case", () => {
     mockReset(gameService);
   });
 
-  it("should fail when gameId is empty", async () => {
-    const result = await getGameReviews({
-      dependencies: {
-        gameReviewService,
-        gameService,
-      },
-      payload: {
-        gameId: "",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+  it("should throw error when gameId is empty", async () => {
+    await expect(
+      getGameReviews({
+        dependencies: {
+          gameReviewService,
+          gameService,
+        },
+        payload: {
+          gameId: "",
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("should fail when game does not exist", async () => {
+  it("should throw error when game does not exist", async () => {
     gameService.getGameById.mockResolvedValue(undefined);
 
-    const result = await getGameReviews({
-      dependencies: {
-        gameReviewService,
-        gameService,
-      },
-      payload: {
-        gameId: "non-existent",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      getGameReviews({
+        dependencies: {
+          gameReviewService,
+          gameService,
+        },
+        payload: {
+          gameId: "non-existent",
+        },
+      })
+    ).rejects.toThrow(Error);
     expect(gameService.getGameById).toHaveBeenCalledWith("non-existent");
     expect(gameService.getGameById).toHaveBeenCalledOnce();
   });

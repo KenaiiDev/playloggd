@@ -44,51 +44,51 @@ describe("Update Game Status Use Case", () => {
     expect(userGameService.updateGameStatus).toHaveBeenCalledWith(payload);
   });
 
-  it("should return error when userId is empty", async () => {
+  it("should throw error when userId is empty", async () => {
     const payload = {
       userId: "",
       gameExternalId: "game-123",
       status: GameStatusEnum.PLAYING,
     };
 
-    const result = await updateGameStatus({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateGameStatus({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.updateGameStatus).not.toHaveBeenCalled();
   });
 
-  it("should return error when gameExternalId is empty", async () => {
+  it("should throw error when gameExternalId is empty", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: "",
       status: GameStatusEnum.PLAYING,
     };
 
-    const result = await updateGameStatus({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateGameStatus({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.updateGameStatus).not.toHaveBeenCalled();
   });
 
-  it("should return error when status is empty", async () => {
+  it("should throw error when status is empty", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: "game-123",
       status: "" as GameStatus,
     };
 
-    const result = await updateGameStatus({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateGameStatus({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.updateGameStatus).not.toHaveBeenCalled();
   });
 });

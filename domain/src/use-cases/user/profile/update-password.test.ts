@@ -26,7 +26,6 @@ describe("Update password", () => {
     userService.getById.mockResolvedValue(user);
     authService.verifyPassword.mockResolvedValue(true);
     userService.updatePassword.mockResolvedValue(true);
-    authService.validatePassword.mockReturnValue(null);
 
     const result = await updatePassword({
       dependencies: { userService, authService },
@@ -45,24 +44,24 @@ describe("Update password", () => {
     );
   });
 
-  it("Should return an error if the user is not found", async () => {
+  it("Should throw error if the user is not found", async () => {
     const userId = "123";
     userService.getById.mockResolvedValue(undefined);
 
-    const result = await updatePassword({
-      dependencies: { userService, authService },
-      payload: {
-        userId,
-        currentPassword: "oldPassword",
-        newPassword: "newPassword",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updatePassword({
+        dependencies: { userService, authService },
+        payload: {
+          userId,
+          currentPassword: "oldPassword",
+          newPassword: "newPassword",
+        },
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith(userId);
   });
 
-  it("Should return an error if the current password is incorrect", async () => {
+  it("Should throw error if the current password is incorrect", async () => {
     const userId = "123";
     const user = createMockUser({
       id: userId,
@@ -72,16 +71,16 @@ describe("Update password", () => {
     userService.getById.mockResolvedValue(user);
     authService.verifyPassword.mockResolvedValue(false);
 
-    const result = await updatePassword({
-      dependencies: { userService, authService },
-      payload: {
-        userId,
-        currentPassword: "wrongPassword",
-        newPassword: "newPassword",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updatePassword({
+        dependencies: { userService, authService },
+        payload: {
+          userId,
+          currentPassword: "wrongPassword",
+          newPassword: "newPassword",
+        },
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith(userId);
     expect(authService.verifyPassword).toHaveBeenCalledWith(
       "wrongPassword",
@@ -89,7 +88,7 @@ describe("Update password", () => {
     );
   });
 
-  it("Should return an error if the new password is invalid", async () => {
+  it("Should throw error if the new password is invalid", async () => {
     const userId = "123";
     const user = createMockUser({
       id: userId,
@@ -98,11 +97,15 @@ describe("Update password", () => {
 
     userService.getById.mockResolvedValue(user);
 
-    const result = await updatePassword({
-      dependencies: { userService, authService },
-      payload: { userId, currentPassword: "oldPassword", newPassword: "short" },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updatePassword({
+        dependencies: { userService, authService },
+        payload: {
+          userId,
+          currentPassword: "oldPassword",
+          newPassword: "short",
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 });

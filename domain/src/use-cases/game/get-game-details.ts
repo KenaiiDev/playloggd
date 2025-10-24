@@ -1,3 +1,4 @@
+import { NotFoundError, ValidationError } from "@/errors";
 import { GameService } from "@/services/";
 
 interface GetGameDetailsParams {
@@ -13,11 +14,11 @@ export async function getGameDetails({
   dependencies,
   payload,
 }: GetGameDetailsParams) {
-  if (!payload.gameId) return new Error("Game id is required!");
+  if (!payload.gameId) throw new ValidationError("Game id is required!");
 
   const result = await dependencies.gameService.getGameById(payload.gameId);
 
-  if (result === undefined) return new Error("No game was found");
+  if (result === undefined) throw new NotFoundError("No game was found");
 
   return result;
 }

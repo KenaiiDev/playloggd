@@ -43,7 +43,7 @@ describe("Update profile", () => {
     });
   });
 
-  it("Should return an error if no email is provided", async () => {
+  it("Should throw error if no email is provided", async () => {
     const userEmail = "";
     const userData = {
       bio: "New bio",
@@ -60,18 +60,18 @@ describe("Update profile", () => {
       bio: userData.bio,
     });
 
-    const result = await updateProfile({
-      dependencies: { userService },
-      payload: {
-        user: userEmail,
-        data: userData,
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateProfile({
+        dependencies: { userService },
+        payload: {
+          user: userEmail,
+          data: userData,
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("Should return an error if no data is provided", async () => {
+  it("Should throw error if no data is provided", async () => {
     const userEmail = "test@test.com";
     const userData = {};
     const prevData = {
@@ -86,18 +86,18 @@ describe("Update profile", () => {
       ...userData,
     });
 
-    const result = await updateProfile({
-      dependencies: { userService },
-      payload: {
-        user: userEmail,
-        data: {},
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateProfile({
+        dependencies: { userService },
+        payload: {
+          user: userEmail,
+          data: {},
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("Should return an error if email is only spaces is provided", async () => {
+  it("Should throw error if email is only spaces is provided", async () => {
     const userEmail = "     ";
     const userData = {
       bio: "New bio",
@@ -114,14 +114,14 @@ describe("Update profile", () => {
       bio: userData.bio,
     });
 
-    const result = await updateProfile({
-      dependencies: { userService },
-      payload: {
-        user: userEmail,
-        data: userData,
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateProfile({
+        dependencies: { userService },
+        payload: {
+          user: userEmail,
+          data: userData,
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 });

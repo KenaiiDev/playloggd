@@ -1,3 +1,4 @@
+import { NotFoundError, UnauthorizedError, ValidationError } from "@/errors";
 import { GameReviewService, UserService } from "@/services";
 
 interface DeleteReviewProps {
@@ -15,18 +16,19 @@ export async function deleteReview({
   dependencies,
   payload,
 }: DeleteReviewProps): Promise<Error | boolean> {
-  if (!payload.reviewId) return new Error("Review id is required");
-  if (!payload.userId) return new Error("User id is required");
+  if (!payload.reviewId) throw new ValidationError("Review id is required");
+  if (!payload.userId) throw new ValidationError("User id is required");
 
   const userFound = await dependencies.userService.getById(payload.userId);
-  if (!userFound) return new Error("No user found");
+  if (!userFound) throw new NotFoundError("No user found");
 
   const reviewFound = await dependencies.gameReviewService.getById(
     payload.reviewId
   );
-  if (!reviewFound) return new Error("No review found");
+  if (!reviewFound) throw new NotFoundError("No review found");
 
-  if (reviewFound.userId !== userFound.id) return new Error("Unauthorized");
+  if (reviewFound.userId !== userFound.id)
+    throw new UnauthorizedError("Unauthorized");
 
   const result = await dependencies.gameReviewService.delete(payload.reviewId);
 

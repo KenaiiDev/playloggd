@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors";
 import { UserService } from "@/services/user-service";
 
 interface getUsersParams {
@@ -7,7 +8,7 @@ interface getUsersParams {
 
 export async function getUsers({ dependencies, payload }: getUsersParams) {
   if (!payload?.id || !payload.id.trim())
-    return new Error("User ID is required");
+    throw new ValidationError("User ID is required");
 
   const result = await dependencies.userService.getById(payload.id);
   return result;
@@ -18,7 +19,7 @@ export async function getUsersByEmail({
   payload,
 }: getUsersParams) {
   if (!payload?.email || !payload.email.trim())
-    return new Error("User email is required");
+    throw new ValidationError("User email is required");
 
   const result = await dependencies.userService.getByEmail(payload.email);
   return result;

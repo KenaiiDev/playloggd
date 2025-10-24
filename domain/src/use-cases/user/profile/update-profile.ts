@@ -1,4 +1,5 @@
 import { User } from "@/entities";
+import { ValidationError } from "@/errors";
 import { UserService } from "@/services";
 
 interface updateProfileParams {
@@ -19,9 +20,9 @@ export async function updateProfile({
   dependencies,
   payload,
 }: updateProfileParams) {
-  if (!payload.user.trim()) return new Error("User email is required");
+  if (!payload.user.trim()) throw new ValidationError("User email is required");
   if (!payload.data || Object.keys(payload.data).length === 0)
-    return new Error("New data is required");
+    throw new ValidationError("New data is required");
 
   const result = dependencies.userService.update(payload);
 

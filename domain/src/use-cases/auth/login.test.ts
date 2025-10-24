@@ -56,52 +56,43 @@ describe("Login", () => {
     expect(authService.generateToken).toHaveBeenCalledWith(mockUser.id);
   });
 
-  it("Should return an error if email is empty", async () => {
-    const result = await login({
-      dependencies: { userService, authService },
-      payload: {
-        email: "",
-        password: "password123",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Email is required");
-    }
+  it("Should throw error if email is empty", async () => {
+    await expect(
+      login({
+        dependencies: { userService, authService },
+        payload: {
+          email: "",
+          password: "password123",
+        },
+      })
+    ).rejects.toThrow("Email is required");
   });
 
-  it("Should return an error if password is empty", async () => {
-    const result = await login({
-      dependencies: { userService, authService },
-      payload: {
-        email: "test@example.com",
-        password: "",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Password is required");
-    }
+  it("Should throw error if password is empty", async () => {
+    await expect(
+      login({
+        dependencies: { userService, authService },
+        payload: {
+          email: "test@example.com",
+          password: "",
+        },
+      })
+    ).rejects.toThrow("Password is required");
   });
 
-  it("Should return an error if user is not found", async () => {
-    const result = await login({
-      dependencies: { userService, authService },
-      payload: {
-        email: "nouser@test.com",
-        password: "password123",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("No user found");
-    }
+  it("Should throw error if user is not found", async () => {
+    await expect(
+      login({
+        dependencies: { userService, authService },
+        payload: {
+          email: "nouser@test.com",
+          password: "password123",
+        },
+      })
+    ).rejects.toThrow("No user found");
   });
 
-  it("Should return an error if password is invalid", async () => {
+  it("Should throw error if password is invalid", async () => {
     const mockUser = createMockUser({
       email: "test@example.com",
       passwordHash: "$2b$10$hashedpassword",
@@ -118,14 +109,14 @@ describe("Login", () => {
     authService.verifyPassword.mockResolvedValue(false);
     authService.generateToken.mockResolvedValue(mockTokens);
 
-    const result = await login({
-      dependencies: { userService, authService },
-      payload: {
-        email: "test@example.com",
-        password: "password123",
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      login({
+        dependencies: { userService, authService },
+        payload: {
+          email: "test@example.com",
+          password: "password123",
+        },
+      })
+    ).rejects.toThrow();
   });
 });

@@ -12,13 +12,13 @@ describe("Get users", () => {
   });
 
   describe("By id", () => {
-    it("Should return an error if id is empty", async () => {
-      const result = await getUsers({
-        dependencies: { userService },
-        payload: { id: "" },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if id is empty", async () => {
+      await expect(
+        getUsers({
+          dependencies: { userService },
+          payload: { id: "" },
+        })
+      ).rejects.toThrow(Error);
     });
 
     it("Should return an user when a registered id is given", async () => {
@@ -48,31 +48,31 @@ describe("Get users", () => {
       expect(userService.getById).toHaveBeenCalledWith("nonexistent");
     });
 
-    it("Should return an error if id is null", async () => {
-      const result = await getUsers({
-        dependencies: { userService },
-        payload: { id: null as unknown as string },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if id is null", async () => {
+      await expect(
+        getUsers({
+          dependencies: { userService },
+          payload: { id: null as unknown as string },
+        })
+      ).rejects.toThrow(Error);
     });
 
-    it("Should return an error if id is undefined", async () => {
-      const result = await getUsers({
-        dependencies: { userService },
-        payload: { id: undefined },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if id is undefined", async () => {
+      await expect(
+        getUsers({
+          dependencies: { userService },
+          payload: { id: undefined },
+        })
+      ).rejects.toThrow(Error);
     });
 
-    it("Should return an error if id contains only spaces", async () => {
-      const result = await getUsers({
-        dependencies: { userService },
-        payload: { id: "   " },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if id contains only spaces", async () => {
+      await expect(
+        getUsers({
+          dependencies: { userService },
+          payload: { id: "   " },
+        })
+      ).rejects.toThrow(Error);
     });
 
     it("Should handle service errors gracefully", async () => {
@@ -105,40 +105,40 @@ describe("Get users", () => {
       expect(userService.getByEmail).toHaveBeenCalledOnce();
     });
 
-    it("Should return an error if email is empty", async () => {
-      const result = await getUsersByEmail({
-        dependencies: { userService },
-        payload: { email: "" },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if email is empty", async () => {
+      await expect(
+        getUsersByEmail({
+          dependencies: { userService },
+          payload: { email: "" },
+        })
+      ).rejects.toThrow(Error);
     });
 
-    it("Should return an error if email is null", async () => {
-      const result = await getUsersByEmail({
-        dependencies: { userService },
-        payload: { email: null as unknown as string },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if email is null", async () => {
+      await expect(
+        getUsersByEmail({
+          dependencies: { userService },
+          payload: { email: null as unknown as string },
+        })
+      ).rejects.toThrow(Error);
     });
 
-    it("Should return an error if email is undefined", async () => {
-      const result = await getUsersByEmail({
-        dependencies: { userService },
-        payload: { email: undefined },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if email is undefined", async () => {
+      await expect(
+        getUsersByEmail({
+          dependencies: { userService },
+          payload: { email: undefined },
+        })
+      ).rejects.toThrow(Error);
     });
 
-    it("Should return an error if email contains only spaces", async () => {
-      const result = await getUsersByEmail({
-        dependencies: { userService },
-        payload: { email: "   " },
-      });
-
-      expect(result).toBeInstanceOf(Error);
+    it("Should throw error if email contains only spaces", async () => {
+      await expect(
+        getUsersByEmail({
+          dependencies: { userService },
+          payload: { email: "   " },
+        })
+      ).rejects.toThrow(Error);
     });
 
     it("Should return undefined if the user is not found by email", async () => {

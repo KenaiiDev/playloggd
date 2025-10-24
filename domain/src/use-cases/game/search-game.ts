@@ -1,3 +1,4 @@
+import { ValidationError } from "@/errors";
 import { GameService } from "@/services/";
 
 interface SearchGameParams {
@@ -10,9 +11,11 @@ interface SearchGameParams {
 }
 
 export async function searchGame({ dependencies, payload }: SearchGameParams) {
-  if (!payload.query) return new Error("Search query cannot be empty");
+  if (!payload.query) throw new ValidationError("Search query cannot be empty");
   if (payload.query.length <= 2)
-    return new Error("Search query must be at least 2 characters long");
+    throw new ValidationError(
+      "Search query must be at least 2 characters long"
+    );
   const result = await dependencies.gameService.searchGames(payload.query);
 
   return result;

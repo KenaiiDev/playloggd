@@ -49,26 +49,26 @@ describe("Search Game Use Case", () => {
     expect(gameService.searchGames).toHaveBeenCalledWith(query);
   });
 
-  it("should return error when query is empty", async () => {
+  it("should throw error when query is empty", async () => {
     const query = "";
 
-    const result = await searchGame({
-      dependencies: { gameService },
-      payload: { query },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      searchGame({
+        dependencies: { gameService },
+        payload: { query },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("should handle minimum query length requirement", async () => {
+  it("should throw error when query is too short", async () => {
     const query = "a"; // Too short
 
-    const result = await searchGame({
-      dependencies: { gameService },
-      payload: { query },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      searchGame({
+        dependencies: { gameService },
+        payload: { query },
+      })
+    ).rejects.toThrow(Error);
     expect(gameService.searchGames).not.toHaveBeenCalled();
   });
 });

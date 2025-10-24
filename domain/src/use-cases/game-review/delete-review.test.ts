@@ -34,97 +34,99 @@ describe("Delete Review Use Case", () => {
     mockReset(userService);
   });
 
-  it("should fail when reviewId is empty", async () => {
-    const result = await deleteReview({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        reviewId: "",
-        userId: mockUser.id,
-      },
-    });
 
-    expect(result).toBeInstanceOf(Error);
+  it("should throw error when reviewId is empty", async () => {
+    await expect(
+      deleteReview({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          reviewId: "",
+          userId: mockUser.id,
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("should fail when userId is empty", async () => {
-    const result = await deleteReview({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        reviewId: mockReview.id,
-        userId: "",
-      },
-    });
 
-    expect(result).toBeInstanceOf(Error);
+  it("should throw error when userId is empty", async () => {
+    await expect(
+      deleteReview({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          reviewId: mockReview.id,
+          userId: "",
+        },
+      })
+    ).rejects.toThrow(Error);
   });
 
-  it("should fail when user does not exist", async () => {
+
+  it("should throw error when user does not exist", async () => {
     userService.getById.mockResolvedValue(undefined);
 
-    const result = await deleteReview({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        reviewId: mockReview.id,
-        userId: mockUser.id,
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      deleteReview({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          reviewId: mockReview.id,
+          userId: mockUser.id,
+        },
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith(mockUser.id);
     expect(userService.getById).toHaveBeenCalledOnce();
   });
 
-  it("should fail when review does not exist", async () => {
+
+  it("should throw error when review does not exist", async () => {
     userService.getById.mockResolvedValue(mockUser);
     gameReviewService.getById.mockResolvedValue(undefined);
 
-    const result = await deleteReview({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        reviewId: mockReview.id,
-        userId: mockUser.id,
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      deleteReview({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          reviewId: mockReview.id,
+          userId: mockUser.id,
+        },
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith(mockUser.id);
     expect(gameReviewService.getById).toHaveBeenCalledWith(mockReview.id);
     expect(userService.getById).toHaveBeenCalledOnce();
     expect(gameReviewService.getById).toHaveBeenCalledOnce();
   });
 
-  it("should fail when user is not the review owner", async () => {
+
+  it("should throw error when user is not the review owner", async () => {
     const differentUser = createMockUser({ id: "different-user" });
     userService.getById.mockResolvedValue(differentUser);
     gameReviewService.getById.mockResolvedValue(mockReview);
 
-    const result = await deleteReview({
-      dependencies: {
-        gameReviewService,
-        userService,
-      },
-      payload: {
-        reviewId: mockReview.id,
-        userId: differentUser.id,
-      },
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Unauthorized");
-    }
+    await expect(
+      deleteReview({
+        dependencies: {
+          gameReviewService,
+          userService,
+        },
+        payload: {
+          reviewId: mockReview.id,
+          userId: differentUser.id,
+        },
+      })
+    ).rejects.toThrow("Unauthorized");
     expect(userService.getById).toHaveBeenCalledWith(differentUser.id);
     expect(gameReviewService.getById).toHaveBeenCalledWith(mockReview.id);
     expect(userService.getById).toHaveBeenCalledOnce();

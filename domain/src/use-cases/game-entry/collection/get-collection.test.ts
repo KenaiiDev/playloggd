@@ -115,17 +115,17 @@ describe("Get Collection Use Case", () => {
     expect(userGameService.getUserGames).toHaveBeenCalledWith(mockUser.id);
   });
 
-  it("should return error when userId is empty", async () => {
+  it("should throw error when userId is empty", async () => {
     const payload = {
       userId: "",
     };
 
-    const result = await getCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      getCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.getUserGames).not.toHaveBeenCalled();
   });
 

@@ -1,3 +1,4 @@
+import { ConflictError, ValidationError } from "@/errors";
 import { AuthService, UserService } from "@/services";
 
 interface registerParams {
@@ -11,17 +12,14 @@ interface registerParams {
 }
 
 export async function register({ dependencies, payload }: registerParams) {
-  if (!payload.email) return new Error("Email is required");
-  if (!payload.password) return new Error("Password is required");
-  if (!payload.username) return new Error("Username is required");
+  if (!payload.email) throw new ValidationError("Email is required");
+  if (!payload.password) throw new ValidationError("Password is required");
+  if (!payload.username) throw new ValidationError("Username is required");
 
-  const passwordError = dependencies.authService?.validatePassword(
-    payload.password
-  );
-  if (passwordError) return new Error(passwordError.message);
+  dependencies.authService?.validatePassword(payload.password);
 
   const existingUser = await dependencies.userService.getByEmail(payload.email);
-  if (existingUser) return new Error();
+  if (existingUser) throw new ConflictError("User already exist");
 
   const result = dependencies.userService.create({ ...payload });
 

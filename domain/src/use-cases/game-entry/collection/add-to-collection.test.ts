@@ -53,7 +53,7 @@ describe("Add To Collection Use Case", () => {
     expect(userGameService.addUserGame).toHaveBeenCalledWith(payload);
   });
 
-  it("should return error if game is already in collection", async () => {
+  it("should throw error if game is already in collection", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
@@ -69,12 +69,12 @@ describe("Add To Collection Use Case", () => {
 
     userGameService.findUserGame.mockResolvedValue(existingUserGame);
 
-    const result = await addToCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      addToCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.findUserGame).toHaveBeenCalledWith(
       mockUser.id,
       mockGame.externalId
@@ -82,36 +82,36 @@ describe("Add To Collection Use Case", () => {
     expect(userGameService.addUserGame).not.toHaveBeenCalled();
   });
 
-  it("should return error when userId is empty", async () => {
+  it("should throw error when userId is empty", async () => {
     const payload = {
       userId: "",
       gameExternalId: mockGame.externalId,
       status: GameStatusEnum.WISHLIST,
     };
 
-    const result = await addToCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      addToCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.findUserGame).not.toHaveBeenCalled();
     expect(userGameService.addUserGame).not.toHaveBeenCalled();
   });
 
-  it("should return error when gameExternalId is empty", async () => {
+  it("should throw error when gameExternalId is empty", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: "",
       status: GameStatusEnum.WISHLIST,
     };
 
-    const result = await addToCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      addToCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.findUserGame).not.toHaveBeenCalled();
     expect(userGameService.addUserGame).not.toHaveBeenCalled();
   });

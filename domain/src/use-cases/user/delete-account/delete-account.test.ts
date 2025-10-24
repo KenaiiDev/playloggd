@@ -45,45 +45,39 @@ describe("Delete Account Use Case", () => {
     expect(userService.deleteUser).toHaveBeenCalledWith(payload.userId);
   });
 
-  it("should return error when userId is empty", async () => {
+  it("should throw error when userId is empty", async () => {
     const payload = {
       userId: "",
       password: "ValidPass123",
     };
 
-    const result = await deleteAccount({
-      dependencies: { userService, authService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("User id is required");
-    }
+    await expect(
+      deleteAccount({
+        dependencies: { userService, authService },
+        payload,
+      })
+    ).rejects.toThrow("User id is required");
     expect(authService.verifyPassword).not.toHaveBeenCalled();
     expect(userService.deleteUser).not.toHaveBeenCalled();
   });
 
-  it("should return error when password is empty", async () => {
+  it("should throw error when password is empty", async () => {
     const payload = {
       userId: mockUser.id,
       password: "",
     };
 
-    const result = await deleteAccount({
-      dependencies: { userService, authService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Password is required");
-    }
+    await expect(
+      deleteAccount({
+        dependencies: { userService, authService },
+        payload,
+      })
+    ).rejects.toThrow("Password is required");
     expect(authService.verifyPassword).not.toHaveBeenCalled();
     expect(userService.deleteUser).not.toHaveBeenCalled();
   });
 
-  it("should return error when password is incorrect", async () => {
+  it("should throw error when password is incorrect", async () => {
     const payload = {
       userId: mockUser.id,
       password: "WrongPass123",
@@ -92,15 +86,12 @@ describe("Delete Account Use Case", () => {
     userService.getById.mockResolvedValue(mockUser);
     authService.verifyPassword.mockResolvedValue(false);
 
-    const result = await deleteAccount({
-      dependencies: { userService, authService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Invalid password");
-    }
+    await expect(
+      deleteAccount({
+        dependencies: { userService, authService },
+        payload,
+      })
+    ).rejects.toThrow("Invalid password");
     expect(authService.verifyPassword).toHaveBeenCalledWith(
       payload.password,
       mockUser.passwordHash

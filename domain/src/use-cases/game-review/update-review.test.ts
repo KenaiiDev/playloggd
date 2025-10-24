@@ -72,7 +72,7 @@ describe("Update Review Use Case", () => {
     });
   });
 
-  it("should return error when review does not exist", async () => {
+  it("should throw error when review does not exist", async () => {
     const payload = {
       reviewId: "non-existent-review",
       rating: 5,
@@ -81,17 +81,17 @@ describe("Update Review Use Case", () => {
 
     gameReviewService.getById.mockResolvedValue(undefined);
 
-    const result = await updateReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(gameReviewService.getById).toHaveBeenCalledWith(payload.reviewId);
     expect(gameReviewService.update).not.toHaveBeenCalled();
   });
 
-  it("should return error when rating is invalid", async () => {
+  it("should throw error when rating is invalid", async () => {
     const payload = {
       reviewId: mockReview.id,
       userId: mockUser.id,
@@ -99,18 +99,18 @@ describe("Update Review Use Case", () => {
       content: "Updated review",
     };
 
-    const result = await updateReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).not.toHaveBeenCalled();
     expect(gameReviewService.getById).not.toHaveBeenCalled();
     expect(gameReviewService.update).not.toHaveBeenCalled();
   });
 
-  it("should return error when reviewId is empty", async () => {
+  it("should throw error when reviewId is empty", async () => {
     const payload = {
       reviewId: "",
       userId: mockUser.id,
@@ -118,12 +118,12 @@ describe("Update Review Use Case", () => {
       content: "Updated review",
     };
 
-    const result = await updateReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      updateReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).not.toHaveBeenCalled();
     expect(gameReviewService.getById).not.toHaveBeenCalled();
     expect(gameReviewService.update).not.toHaveBeenCalled();

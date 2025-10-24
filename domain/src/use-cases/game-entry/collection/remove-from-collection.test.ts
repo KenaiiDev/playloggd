@@ -57,7 +57,7 @@ describe("Remove From Collection Use Case", () => {
     );
   });
 
-  it("should return error if game is not in collection", async () => {
+  it("should throw error if game is not in collection", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
@@ -65,12 +65,12 @@ describe("Remove From Collection Use Case", () => {
 
     userGameService.findUserGame.mockResolvedValue(undefined);
 
-    const result = await removeFromCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      removeFromCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.findUserGame).toHaveBeenCalledWith(
       mockUser.id,
       mockGame.externalId
@@ -78,34 +78,34 @@ describe("Remove From Collection Use Case", () => {
     expect(userGameService.removeUserGame).not.toHaveBeenCalled();
   });
 
-  it("should return error when userId is empty", async () => {
+  it("should throw error when userId is empty", async () => {
     const payload = {
       userId: "",
       gameExternalId: mockGame.externalId,
     };
 
-    const result = await removeFromCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      removeFromCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.findUserGame).not.toHaveBeenCalled();
     expect(userGameService.removeUserGame).not.toHaveBeenCalled();
   });
 
-  it("should return error when gameExternalId is empty", async () => {
+  it("should throw error when gameExternalId is empty", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: "",
     };
 
-    const result = await removeFromCollection({
-      dependencies: { userGameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      removeFromCollection({
+        dependencies: { userGameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userGameService.findUserGame).not.toHaveBeenCalled();
     expect(userGameService.removeUserGame).not.toHaveBeenCalled();
   });

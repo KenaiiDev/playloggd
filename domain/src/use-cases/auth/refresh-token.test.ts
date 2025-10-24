@@ -34,21 +34,18 @@ describe("Refresh Token Use Case", () => {
     expect(authService.refreshToken).toHaveBeenCalledWith(payload.refreshToken);
   });
 
-  it("should return error when refresh token is empty", async () => {
+  it("should throw error when refresh token is empty", async () => {
     const payload = {
       refreshToken: "",
     };
 
-    const result = await refreshToken({
-      dependencies: { authService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      refreshToken({ dependencies: { authService }, payload })
+    ).rejects.toThrow();
     expect(authService.refreshToken).not.toHaveBeenCalled();
   });
 
-  it("should handle invalid refresh token", async () => {
+  it("should throw error for invalid refresh token", async () => {
     const payload = {
       refreshToken: "invalid-refresh-token",
     };
@@ -56,12 +53,9 @@ describe("Refresh Token Use Case", () => {
     const mockError = new Error("Invalid refresh token");
     authService.refreshToken.mockRejectedValue(mockError);
 
-    const result = await refreshToken({
-      dependencies: { authService },
-      payload,
-    });
-
-    expect(result).toBe(mockError);
+    await expect(
+      refreshToken({ dependencies: { authService }, payload })
+    ).rejects.toThrow("Invalid refresh token");
     expect(authService.refreshToken).toHaveBeenCalledWith(payload.refreshToken);
   });
 });

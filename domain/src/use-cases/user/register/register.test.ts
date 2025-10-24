@@ -20,7 +20,7 @@ describe("Register", () => {
     const userData = {
       username: "testuser",
       email: "test@example.com",
-      password: "ValidPass123", // Updated to match password requirements
+      password: "ValidPass123",
       bio: "Test bio",
     };
 
@@ -43,178 +43,151 @@ describe("Register", () => {
     expect(userService.create).toHaveBeenCalled();
   });
 
-  it("Should return an error if the email is already registered", async () => {
+  it("Should throw error if the email is already registered", async () => {
     const userData = {
       username: "testuser",
       email: "existing@example.com",
-      password: "ValidPass123", // Updated to match password requirements
+      password: "ValidPass123",
     };
 
     const existingUser = createMockUser({ email: userData.email });
 
     userService.getByEmail.mockResolvedValue(existingUser);
 
-    const result = await register({
-      dependencies: { userService },
-      payload: userData,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      register({
+        dependencies: { userService },
+        payload: userData,
+      })
+    ).rejects.toThrow(Error);
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("Should return an error if no email is provided", async () => {
+  it("Should throw error if no email is provided", async () => {
     const userData = {
       username: "testuser",
       email: "",
-      password: "ValidPass123", // Updated to match password requirements
+      password: "ValidPass123",
     };
 
-    const result = await register({
-      dependencies: { userService },
-      payload: userData,
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Email is required");
-    }
+    await expect(
+      register({
+        dependencies: { userService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Email is required");
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("Should return an error if no password is provided", async () => {
+  it("Should throw error if no password is provided", async () => {
     const userData = {
       username: "testuser",
       email: "test@test.com",
       password: "",
     };
 
-    const result = await register({
-      dependencies: { userService },
-      payload: userData,
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Password is required");
-    }
+    await expect(
+      register({
+        dependencies: { userService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Password is required");
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("Should return an error if no username is provided", async () => {
+  it("Should throw error if no username is provided", async () => {
     const userData = {
       username: "",
       email: "test@test.com",
-      password: "ValidPass123", // Updated to match password requirements
+      password: "ValidPass123",
     };
 
-    const result = await register({
-      dependencies: { userService },
-      payload: userData,
-    });
-
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Username is required");
-    }
+    await expect(
+      register({
+        dependencies: { userService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Username is required");
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when password is too short", async () => {
+  it("should throw error when password is too short", async () => {
     const userData = {
       username: "testuser",
       email: "test@example.com",
       password: "short",
     };
 
-    authService.validatePassword.mockReturnValue(
-      new Error("Password must be at least 8 characters long")
-    );
-
-    const result = await register({
-      dependencies: { userService, authService },
-      payload: userData,
+    authService.validatePassword.mockImplementation(() => {
+      throw new Error("Password must be at least 8 characters long");
     });
 
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe(
-        "Password must be at least 8 characters long"
-      );
-    }
+    await expect(
+      register({
+        dependencies: { userService, authService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Password must be at least 8 characters long");
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when password has no uppercase letters", async () => {
+  it("should throw error when password has no uppercase letters", async () => {
     const userData = {
       username: "testuser",
       email: "test@example.com",
       password: "password123",
     };
 
-    authService.validatePassword.mockReturnValue(
-      new Error("Password must contain at least one uppercase letter")
-    );
-
-    const result = await register({
-      dependencies: { userService, authService },
-      payload: userData,
+    authService.validatePassword.mockImplementation(() => {
+      throw new Error("Password must contain at least one uppercase letter");
     });
 
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe(
-        "Password must contain at least one uppercase letter"
-      );
-    }
+    await expect(
+      register({
+        dependencies: { userService, authService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Password must contain at least one uppercase letter");
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when password has no lowercase letters", async () => {
+  it("should throw error when password has no lowercase letters", async () => {
     const userData = {
       username: "testuser",
       email: "test@example.com",
       password: "PASSWORD123",
     };
 
-    authService.validatePassword.mockReturnValue(
-      new Error("Password must contain at least one lowercase letter")
-    );
-
-    const result = await register({
-      dependencies: { userService, authService },
-      payload: userData,
+    authService.validatePassword.mockImplementation(() => {
+      throw new Error("Password must contain at least one lowercase letter");
     });
 
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe(
-        "Password must contain at least one lowercase letter"
-      );
-    }
+    await expect(
+      register({
+        dependencies: { userService, authService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Password must contain at least one lowercase letter");
     expect(userService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when password has no numbers", async () => {
+  it("should throw error when password has no numbers", async () => {
     const userData = {
       username: "testuser",
       email: "test@example.com",
       password: "PasswordNoNumbers",
     };
 
-    authService.validatePassword.mockReturnValue(
-      new Error("Password must contain at least one number")
-    );
-
-    const result = await register({
-      dependencies: { userService, authService },
-      payload: userData,
+    authService.validatePassword.mockImplementation(() => {
+      throw new Error("Password must contain at least one number");
     });
 
-    expect(result).toBeInstanceOf(Error);
-    if (result instanceof Error) {
-      expect(result.message).toBe("Password must contain at least one number");
-    }
+    await expect(
+      register({
+        dependencies: { userService, authService },
+        payload: userData,
+      })
+    ).rejects.toThrow("Password must contain at least one number");
     expect(userService.create).not.toHaveBeenCalled();
   });
 });

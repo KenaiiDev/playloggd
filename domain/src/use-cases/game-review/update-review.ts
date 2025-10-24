@@ -1,3 +1,4 @@
+import { NotFoundError, ValidationError } from "@/errors";
 import { GameReviewService, GameService, UserService } from "@/services";
 
 interface UpdateReviewProps {
@@ -20,15 +21,15 @@ export async function updateReview({
   payload,
 }: UpdateReviewProps) {
   const { reviewId, ...data } = payload;
-  if (!reviewId) return new Error("Review id is required");
+  if (!reviewId) throw new ValidationError("Review id is required");
 
   if (data.rating) {
     if (data.rating < 0 || data.rating > 5)
-      return new Error("Rating must be between 0 and 5");
+      throw new ValidationError("Rating must be between 0 and 5");
   }
 
   const reviewFound = await dependencies.gameReviewService.getById(reviewId);
-  if (!reviewFound) return new Error("No review found");
+  if (!reviewFound) throw new NotFoundError("No review found");
 
   const result = await dependencies.gameReviewService.update({
     id: reviewId,

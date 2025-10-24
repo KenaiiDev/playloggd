@@ -65,7 +65,7 @@ describe("Create Review Use Case", () => {
     expect(gameService.getGameById).toHaveBeenCalled();
   });
 
-  it("should return error if review already exists", async () => {
+  it("should throw error if review already exists", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
@@ -86,12 +86,12 @@ describe("Create Review Use Case", () => {
     gameService.getGameById.mockResolvedValue(mockGame);
     gameReviewService.getUserGameReview.mockResolvedValue(existingReview);
 
-    const result = await createReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      createReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(gameReviewService.getUserGameReview).toHaveBeenCalledWith(
       mockUser.id,
       mockGame.externalId
@@ -99,7 +99,7 @@ describe("Create Review Use Case", () => {
     expect(gameReviewService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when userId is empty", async () => {
+  it("should throw error when userId is empty", async () => {
     const payload = {
       userId: "",
       gameExternalId: mockGame.externalId,
@@ -107,17 +107,17 @@ describe("Create Review Use Case", () => {
       content: "Great game!",
     };
 
-    const result = await createReview({
-      dependencies: { gameReviewService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      createReview({
+        dependencies: { gameReviewService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(gameReviewService.getUserGameReview).not.toHaveBeenCalled();
     expect(gameReviewService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when gameExternalId is empty", async () => {
+  it("should throw error when gameExternalId is empty", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: "",
@@ -125,17 +125,17 @@ describe("Create Review Use Case", () => {
       content: "Great game!",
     };
 
-    const result = await createReview({
-      dependencies: { gameReviewService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      createReview({
+        dependencies: { gameReviewService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(gameReviewService.getUserGameReview).not.toHaveBeenCalled();
     expect(gameReviewService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when rating is invalid", async () => {
+  it("should throw error when rating is invalid", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
@@ -143,19 +143,19 @@ describe("Create Review Use Case", () => {
       content: "Great game!",
     };
 
-    const result = await createReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      createReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).not.toHaveBeenCalled();
     expect(gameService.getGameById).not.toHaveBeenCalled();
     expect(gameReviewService.getUserGameReview).not.toHaveBeenCalled();
     expect(gameReviewService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when user does not exist", async () => {
+  it("should throw error when user does not exist", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
@@ -165,19 +165,19 @@ describe("Create Review Use Case", () => {
 
     userService.getById.mockResolvedValue(undefined);
 
-    const result = await createReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      createReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith(mockUser.id);
     expect(gameService.getGameById).not.toHaveBeenCalled();
     expect(gameReviewService.getUserGameReview).not.toHaveBeenCalled();
     expect(gameReviewService.create).not.toHaveBeenCalled();
   });
 
-  it("should return error when game does not exist", async () => {
+  it("should throw error when game does not exist", async () => {
     const payload = {
       userId: mockUser.id,
       gameExternalId: mockGame.externalId,
@@ -188,12 +188,12 @@ describe("Create Review Use Case", () => {
     userService.getById.mockResolvedValue(mockUser);
     gameService.getGameById.mockResolvedValue(undefined);
 
-    const result = await createReview({
-      dependencies: { gameReviewService, userService, gameService },
-      payload,
-    });
-
-    expect(result).toBeInstanceOf(Error);
+    await expect(
+      createReview({
+        dependencies: { gameReviewService, userService, gameService },
+        payload,
+      })
+    ).rejects.toThrow(Error);
     expect(userService.getById).toHaveBeenCalledWith(mockUser.id);
     expect(gameService.getGameById).toHaveBeenCalledWith(mockGame.externalId);
     expect(gameReviewService.getUserGameReview).not.toHaveBeenCalled();
