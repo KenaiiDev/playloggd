@@ -33,7 +33,7 @@ export class UserController {
       });
 
       if (result instanceof Error) {
-        return httpResponse.BAD_REQUEST(res, result.message, { error: result });
+        return next(result);
       }
 
       return httpResponse.CREATED(res, result);

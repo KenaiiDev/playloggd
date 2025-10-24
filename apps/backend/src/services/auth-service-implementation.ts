@@ -84,8 +84,7 @@ export class AuthServiceImplementation implements AuthService {
     );
     if (!isPasswordValid) throw new Error("Current password is incorrect");
 
-    const passwordError = this.validatePassword(newPassword);
-    if (passwordError) throw new Error(passwordError.message);
+    this.validatePassword(newPassword);
 
     const newPasswordHash = await this.PasswordHasher.hash(newPassword);
     await this.userService.updatePassword(userId, newPasswordHash);
@@ -93,23 +92,23 @@ export class AuthServiceImplementation implements AuthService {
     return true;
   }
 
-  validatePassword(password: string): Error | null {
+  validatePassword(password: string): Promise<boolean> {
     if (password.length < 8) {
-      return new Error("Password must be at least 8 characters long");
+      throw new Error("Password must be at least 8 characters long");
     }
 
     if (!/[A-Z]/.test(password)) {
-      return new Error("Password must contain at least one uppercase letter");
+      throw new Error("Password must contain at least one uppercase letter");
     }
 
     if (!/[a-z]/.test(password)) {
-      return new Error("Password must contain at least one lowercase letter");
+      throw new Error("Password must contain at least one lowercase letter");
     }
 
     if (!/[0-9]/.test(password)) {
-      return new Error("Password must contain at least one number");
+      throw new Error("Password must contain at least one number");
     }
 
-    return null;
+    return Promise.resolve(true);
   }
 }
