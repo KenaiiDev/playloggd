@@ -81,4 +81,11 @@ export const httpResponse = {
       error: error,
     });
   },
+  UNAUTHORIZED: (res: CustomResponseMessage, message: string) => {
+    return res.status(HttpStatus.UNAUTHORIZED).json({
+      status: HttpStatus.UNAUTHORIZED,
+      statusMsg: "Unauthorized",
+      message,
+    });
+  },
 };
