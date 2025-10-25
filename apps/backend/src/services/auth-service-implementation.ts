@@ -92,7 +92,7 @@ export class AuthServiceImplementation implements AuthService {
     return true;
   }
 
-  validatePassword(password: string): Promise<boolean> {
+  validatePassword(password: string): void {
     if (password.length < 8) {
       throw new Error("Password must be at least 8 characters long");
     }
@@ -108,7 +108,5 @@ export class AuthServiceImplementation implements AuthService {
     if (!/[0-9]/.test(password)) {
       throw new Error("Password must contain at least one number");
     }
-
-    return Promise.resolve(true);
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { errorHandler } from "./error-handler";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ZodError, ZodIssueCode } from "zod";
@@ -7,6 +7,7 @@ import { ZodError, ZodIssueCode } from "zod";
 describe("Error Handler Middleware", () => {
   let mockRequest: Request;
   let mockResponse: Response;
+  let mockNext: NextFunction;
 
   beforeEach(() => {
     mockRequest = {} as Request;
@@ -14,12 +15,13 @@ describe("Error Handler Middleware", () => {
       status: vi.fn().mockReturnThis(),
       json: vi.fn().mockReturnThis(),
     } as unknown as Response;
+    mockNext = vi.fn() as NextFunction;
   });
 
   it("should handle default error with 500 status", () => {
     const error = new Error("Unexpected error");
 
-    errorHandler(error, mockRequest, mockResponse);
+    errorHandler(error, mockRequest, mockResponse, mockNext);
 
     expect(mockResponse.status).toHaveBeenCalledWith(500);
     expect(mockResponse.json).toHaveBeenCalledWith({
@@ -39,7 +41,7 @@ describe("Error Handler Middleware", () => {
       }
     );
 
-    errorHandler(error, mockRequest, mockResponse);
+    errorHandler(error, mockRequest, mockResponse, mockNext);
 
     expect(mockResponse.status).toHaveBeenCalledWith(409);
     expect(mockResponse.json).toHaveBeenCalledWith({
@@ -56,7 +58,7 @@ describe("Error Handler Middleware", () => {
       clientVersion: "5.0.0",
     });
 
-    errorHandler(error, mockRequest, mockResponse);
+    errorHandler(error, mockRequest, mockResponse, mockNext);
 
     expect(mockResponse.status).toHaveBeenCalledWith(404);
     expect(mockResponse.json).toHaveBeenCalledWith({
@@ -78,13 +80,13 @@ describe("Error Handler Middleware", () => {
       },
     ]);
 
-    errorHandler(error, mockRequest, mockResponse);
+    errorHandler(error, mockRequest, mockResponse, mockNext);
 
     expect(mockResponse.status).toHaveBeenCalledWith(400);
     expect(mockResponse.json).toHaveBeenCalledWith({
       status: 400,
       statusMsg: "Bad Request",
-      message: "Error de validación",
+      message: "ValidationError",
       error: error.issues,
     });
   });

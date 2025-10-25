@@ -1,10 +1,10 @@
-import express from "express";
+import express, { type Express } from "express";
 import cors from "cors";
 import { errorHandler } from "./middleware/error-handler";
 import { UserRoutes } from "./routes/user-routes";
 import { buildUserController } from "./config/user-dependencies";
 
-export const app = express();
+export const app: Express = express();
 
 app.use(cors());
 app.use(express.json());

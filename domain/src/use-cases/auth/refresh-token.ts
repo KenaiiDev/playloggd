@@ -1,4 +1,4 @@
-import { ValidationError } from "@/errors";
+import { ValidationError } from "../../errors";
 import { AuthService } from "@/services";
 
 interface RefreshTokenProps {

@@ -5,6 +5,7 @@ import {
   getUsersByEmail,
   deleteAccount,
   updateProfile,
+  NotFoundError,
 } from "@playloggd/domain";
 import { httpResponse } from "../utils/http-response";
 import { UserServiceImplementation } from "@/services/user-service-implementation";
@@ -32,10 +33,6 @@ export class UserController {
         payload: req.body,
       });
 
-      if (result instanceof Error) {
-        return next(result);
-      }
-
       return httpResponse.CREATED(res, result);
     } catch (error) {
       next(error);
@@ -49,9 +46,7 @@ export class UserController {
         payload: { id: req.params.id },
       });
 
-      if (!result) {
-        return httpResponse.NOT_FOUND(res, "No user found");
-      }
+      if (!result) return next(new NotFoundError("User not found"));
 
       return httpResponse.OK(res, result);
     } catch (error) {
@@ -65,10 +60,6 @@ export class UserController {
         dependencies: { userService: this.userService },
         payload: { email: req.params.email },
       });
-
-      if (result instanceof Error) {
-        return httpResponse.NOT_FOUND(res, result.message);
-      }
 
       return httpResponse.OK(res, result);
     } catch (error) {
@@ -89,11 +80,7 @@ export class UserController {
         },
       });
 
-      if (result instanceof Error) {
-        return httpResponse.BAD_REQUEST(res, result.message, { error: result });
-      }
-
-      return httpResponse.OK(res, "User deleted successfully");
+      if (result) return httpResponse.OK(res, "User deleted successfully");
     } catch (error) {
       next(error);
     }
@@ -108,10 +95,6 @@ export class UserController {
           data: req.body,
         },
       });
-
-      if (result instanceof Error) {
-        return httpResponse.BAD_REQUEST(res, result.message, { error: result });
-      }
 
       return httpResponse.OK(res, result);
     } catch (error) {

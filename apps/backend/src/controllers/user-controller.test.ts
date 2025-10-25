@@ -53,7 +53,7 @@ describe("UserController", () => {
       expect(res.status).toHaveBeenCalledWith(201);
     });
 
-    it("should return 400 if user creation fails", async () => {
+    it("should call next if user creation fails", async () => {
       const req = createRequest({
         method: "POST",
         url: "/register",
@@ -76,7 +76,7 @@ describe("UserController", () => {
 
       await userController.register(req, res, next);
 
-      expect(next).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(new Error("User creation failed"));
     });
   });
 
@@ -110,7 +110,7 @@ describe("UserController", () => {
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("should return 404 if user is not found in getUserById", async () => {
+    it("should call next if user is not found in getUserById", async () => {
       const req = createRequest({
         method: "GET",
         url: "/users/1",
@@ -127,7 +127,7 @@ describe("UserController", () => {
 
       await userController.getUserById(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(next).toHaveBeenCalled();
     });
   });
 
@@ -161,7 +161,7 @@ describe("UserController", () => {
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("should return 404 if user is not found in getUserByEmail", async () => {
+    it("should call next if user is not found in getUserByEmail", async () => {
       const req = createRequest({
         method: "GET",
         url: "/users/email",
@@ -178,12 +178,12 @@ describe("UserController", () => {
 
       await userController.getUserByEmail(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(next).toHaveBeenCalled();
     });
   });
 
   describe("DeleteUser", () => {
-    it("should return 204 if deleteUser succeeds", async () => {
+    it("should return 200 if deleteUser succeeds", async () => {
       const req = createRequest({
         method: "DELETE",
         url: "/users/1",
@@ -217,7 +217,7 @@ describe("UserController", () => {
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("should return 404 if user is not found in deleteUser", async () => {
+    it("should call next if user is not found in deleteUser", async () => {
       const req = createRequest({
         method: "DELETE",
         url: "/users/1",
@@ -239,7 +239,7 @@ describe("UserController", () => {
 
       await userController.deleteUser(req, res, next);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(next).toHaveBeenCalled();
     });
   });
 });

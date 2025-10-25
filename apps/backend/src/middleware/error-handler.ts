@@ -1,12 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { httpResponse } from "@/utils/http-response";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ZodError } from "zod";
 import {
-  ConflictError,
   PasswordValidationError,
   UnauthorizedError,
   ValidationError,
+  ConflictError,
+  NotFoundError,
 } from "@playloggd/domain";
 
 const ERROR_HANDLER = {
@@ -35,13 +36,22 @@ const ERROR_HANDLER = {
   UnauthorizedError: (res: Response, err: UnauthorizedError) => {
     return httpResponse.UNAUTHORIZED(res, err.message);
   },
+  NotFoundError: (res: Response, err: NotFoundError) => {
+    return httpResponse.NOT_FOUND(res, err.message);
+  },
   defaultError: (res: Response, err: unknown) => {
     const message = "Internal Server Error";
     return httpResponse.INTERNAL_SERVER_ERROR(res, message, err);
   },
 };
 
-export const errorHandler = (error: Error, _req: Request, res: Response) => {
+export const errorHandler = (
+  error: Error,
+  _req: Request,
+  res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction
+) => {
   let option: string | undefined;
 
   if (error instanceof PrismaClientKnownRequestError) {
@@ -73,6 +83,10 @@ export const errorHandler = (error: Error, _req: Request, res: Response) => {
 
     case error instanceof UnauthorizedError:
       option = "UnauthorizedError";
+      break;
+
+    case error instanceof NotFoundError:
+      option = "NotFoundError";
       break;
 
     default:

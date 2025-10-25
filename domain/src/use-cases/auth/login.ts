@@ -2,7 +2,7 @@ import {
   PasswordValidationError,
   ValidationError,
   NotFoundError,
-} from "@/errors";
+} from "../../errors";
 import { UserService, AuthService } from "@/services";
 
 interface loginParams {
