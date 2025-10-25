@@ -1,4 +1,9 @@
-import { AuthService, ValidationError } from "@playloggd/domain";
+import {
+  AuthService,
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+} from "@playloggd/domain";
 import { PasswordHasher } from "@/adapters/password-hasher";
 import { TokenManager } from "@/adapters/token-manager";
 import { UserServiceImplementation } from "./user-service-implementation";
@@ -76,13 +81,14 @@ export class AuthServiceImplementation implements AuthService {
     newPassword: string;
   }): Promise<boolean> {
     const user = await this.userService.getById(userId);
-    if (!user) throw new Error("User not found");
+    if (!user) throw new NotFoundError("User not found");
 
     const isPasswordValid = await this.PasswordHasher.compare(
       currentPassword,
       user.passwordHash
     );
-    if (!isPasswordValid) throw new Error("Current password is incorrect");
+    if (!isPasswordValid)
+      throw new ConflictError("Current password is incorrect");
 
     this.validatePassword(newPassword);
 
