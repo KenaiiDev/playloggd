@@ -1,4 +1,4 @@
-import { AuthService } from "@playloggd/domain";
+import { AuthService, ValidationError } from "@playloggd/domain";
 import { PasswordHasher } from "@/adapters/password-hasher";
 import { TokenManager } from "@/adapters/token-manager";
 import { UserServiceImplementation } from "./user-service-implementation";
@@ -94,19 +94,23 @@ export class AuthServiceImplementation implements AuthService {
 
   validatePassword(password: string): void {
     if (password.length < 8) {
-      throw new Error("Password must be at least 8 characters long");
+      throw new ValidationError("Password must be at least 8 characters long");
     }
 
     if (!/[A-Z]/.test(password)) {
-      throw new Error("Password must contain at least one uppercase letter");
+      throw new ValidationError(
+        "Password must contain at least one uppercase letter"
+      );
     }
 
     if (!/[a-z]/.test(password)) {
-      throw new Error("Password must contain at least one lowercase letter");
+      throw new ValidationError(
+        "Password must contain at least one lowercase letter"
+      );
     }
 
     if (!/[0-9]/.test(password)) {
-      throw new Error("Password must contain at least one number");
+      throw new ValidationError("Password must contain at least one number");
     }
   }
 }
