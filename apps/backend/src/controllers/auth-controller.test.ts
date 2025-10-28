@@ -97,8 +97,8 @@ describe("AuthController", () => {
   describe("Change password", () => {
     it("Should call changePassword with correct payload", async () => {
       const req = createRequest({
+        params: { id: "1" },
         body: {
-          userId: "1",
           currentPassword: "Password.123",
           newPassword: "NewPass.123",
         },
@@ -123,10 +123,10 @@ describe("AuthController", () => {
 
     it("Should call next if the new password is not valid", async () => {
       const req = createRequest({
+        params: { id: "1" },
         body: {
-          userId: "1",
           currentPassword: "Password.123",
-          newPassword: "invalid-password",
+          newPassword: "NewPass.123",
         },
       });
       const res = createResponse();

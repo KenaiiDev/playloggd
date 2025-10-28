@@ -38,7 +38,11 @@ export class AuthController {
         dependencies: {
           authService: this.authService,
         },
-        payload: req.body,
+        payload: {
+          userId: req.params.id,
+          currentPassword: req.body.currentPassword,
+          newPassword: req.body.newPassword,
+        },
       });
 
       return httpResponse.OK(res, result);
