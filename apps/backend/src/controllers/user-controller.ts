@@ -6,6 +6,7 @@ import {
   deleteAccount,
   updateProfile,
   NotFoundError,
+  ValidationError,
 } from "@playloggd/domain";
 import { httpResponse } from "../utils/http-response";
 import { UserServiceImplementation } from "@/services/user-service-implementation";
@@ -41,6 +42,10 @@ export class UserController {
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
+      if (req.user?.id !== req.params.id) {
+        next(new ValidationError("Unauthorized!"));
+      }
+
       const result = await getUsers({
         dependencies: { userService: this.userService },
         payload: { id: req.params.id },
@@ -69,6 +74,9 @@ export class UserController {
 
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
+      if (req.user?.id !== req.params.id) {
+        return next(new ValidationError("Unauthorized!"));
+      }
       const result = await deleteAccount({
         dependencies: {
           userService: this.userService,

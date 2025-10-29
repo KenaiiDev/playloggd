@@ -95,6 +95,52 @@ describe("AuthController", () => {
   });
 
   describe("Change password", () => {
+    it("should allow changePassword if user is authorized (id matches)", async () => {
+      const req = createRequest({
+        params: { id: "1" },
+        body: {
+          currentPassword: "Password.123",
+          newPassword: "NewPass.123",
+        },
+      });
+      req.user = { id: "1" };
+      const res = createResponse();
+      const next = vi.fn();
+
+      AuthServiceImplementation.validatePassword.mockImplementation(() => {});
+      AuthServiceImplementation.changePassword.mockResolvedValue(true);
+
+      await authController.changePassword(req, res, next);
+
+      expect(AuthServiceImplementation.validatePassword).toHaveBeenCalledWith(
+        "NewPass.123"
+      );
+      expect(AuthServiceImplementation.changePassword).toHaveBeenCalledWith({
+        userId: "1",
+        currentPassword: "Password.123",
+        newPassword: "NewPass.123",
+      });
+    });
+
+    it("should call next with error if user is not authorized (id does not match) in changePassword", async () => {
+      const req = createRequest({
+        params: { id: "2" },
+        body: {
+          currentPassword: "Password.123",
+          newPassword: "NewPass.123",
+        },
+      });
+      req.user = { id: "1" };
+      const res = createResponse();
+      const next = vi.fn();
+
+      await authController.changePassword(req, res, next);
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Unauthorized!",
+        })
+      );
+    });
     it("Should call changePassword with correct payload", async () => {
       const req = createRequest({
         params: { id: "1" },
@@ -103,6 +149,7 @@ describe("AuthController", () => {
           newPassword: "NewPass.123",
         },
       });
+      req.user = { id: "1" };
       const res = createResponse();
       const next = vi.fn();
 
@@ -129,6 +176,7 @@ describe("AuthController", () => {
           newPassword: "NewPass.123",
         },
       });
+      req.user = { id: "1" };
       const res = createResponse();
       const next = vi.fn();
 

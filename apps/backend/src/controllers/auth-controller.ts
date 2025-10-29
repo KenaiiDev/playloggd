@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { changePassword, login, refreshToken } from "@playloggd/domain";
+import {
+  changePassword,
+  login,
+  refreshToken,
+  ValidationError,
+} from "@playloggd/domain";
 import { AuthServiceImplementation } from "@/services/auth-service-implementation";
 import { UserServiceImplementation } from "@/services/user-service-implementation";
 import { httpResponse } from "@/utils/http-response";
@@ -34,6 +39,9 @@ export class AuthController {
 
   async changePassword(req: Request, res: Response, next: NextFunction) {
     try {
+      if (req.user?.id !== req.params.id) {
+        return next(new ValidationError("Unauthorized!"));
+      }
       const result = await changePassword({
         dependencies: {
           authService: this.authService,

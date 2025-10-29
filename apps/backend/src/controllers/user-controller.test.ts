@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { DeepMockProxy, mockDeep } from "vitest-mock-extended";
 import { UserController } from "./user-controller";
-import { User } from "@playloggd/domain";
+import { User, ValidationError } from "@playloggd/domain";
 import { UserServiceImplementation } from "@/services/user-service-implementation";
 import { AuthServiceImplementation } from "@/services/auth-service-implementation";
 import { createRequest, createResponse } from "node-mocks-http";
@@ -81,17 +81,17 @@ describe("UserController", () => {
   });
 
   describe("GetUserById", () => {
-    it("should return 200 and the user if getUserById succeeds", async () => {
+    it("should return 200 if user is authorized (id matches)", async () => {
       const req = createRequest({
         method: "GET",
         url: "/users/1",
         params: { id: "1" },
       });
+      req.user = { id: "1" };
 
       const res = createResponse();
       res.status = vi.fn().mockReturnThis();
       res.json = vi.fn();
-
       const next = vi.fn();
 
       userServiceMock.getById.mockResolvedValueOnce({
@@ -106,8 +106,24 @@ describe("UserController", () => {
       });
 
       await userController.getUserById(req, res, next);
-
       expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it("should call next with correct error if user is not authorized (id does not match)", async () => {
+      const req = createRequest({
+        method: "GET",
+        url: "/users/2",
+        params: { id: "2" },
+      });
+      req.user = { id: "1" };
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+      const next = vi.fn();
+
+      await userController.getUserById(req, res, next);
+      expect(next).toHaveBeenCalledWith(new ValidationError("Unauthorized!"));
     });
 
     it("should call next if user is not found in getUserById", async () => {
@@ -183,7 +199,7 @@ describe("UserController", () => {
   });
 
   describe("DeleteUser", () => {
-    it("should return 200 if deleteUser succeeds", async () => {
+    it("should return 200 if user is authorized (id matches) in deleteUser", async () => {
       const req = createRequest({
         method: "DELETE",
         url: "/users/1",
@@ -192,11 +208,11 @@ describe("UserController", () => {
           password: "Password123",
         },
       });
+      req.user = { id: "1" };
 
       const res = createResponse();
       res.status = vi.fn().mockReturnThis();
       res.json = vi.fn();
-
       const next = vi.fn();
 
       userServiceMock.getById.mockResolvedValue({
@@ -213,8 +229,27 @@ describe("UserController", () => {
       userServiceMock.deleteUser.mockResolvedValueOnce(true);
 
       await userController.deleteUser(req, res, next);
-
       expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    it("should call next with correct error if user is not authorized (id does not match) in deleteUser", async () => {
+      const req = createRequest({
+        method: "DELETE",
+        url: "/users/2",
+        params: { id: "2" },
+        body: {
+          password: "Password123",
+        },
+      });
+      req.user = { id: "1" };
+
+      const res = createResponse();
+      res.status = vi.fn().mockReturnThis();
+      res.json = vi.fn();
+      const next = vi.fn();
+
+      await userController.deleteUser(req, res, next);
+      expect(next).toHaveBeenCalledWith(new ValidationError("Unauthorized!"));
     });
 
     it("should call next if user is not found in deleteUser", async () => {
