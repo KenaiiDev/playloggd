@@ -1,5 +1,7 @@
 import { JwtAdapter } from "./jwt-adapter";
 
+process.loadEnvFile();
+
 if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_ACCESS_EXPIRES) {
   throw new Error(
     "Environment variables JWT_ACCESS_SECRET and JWT_ACCESS_EXPIRES must be defined"
