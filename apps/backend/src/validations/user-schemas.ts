@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Schema para registrar un usuario
 export const registerUserSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long"),
   email: z.email("Must be a valid email address"),
