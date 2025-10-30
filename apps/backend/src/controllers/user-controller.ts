@@ -46,6 +46,11 @@ export class UserController {
         next(new ValidationError("Unauthorized!"));
       }
 
+      console.log({
+        userParams: req.params.id,
+        userRequest: req.user?.id,
+      });
+
       const result = await getUsers({
         dependencies: { userService: this.userService },
         payload: { id: req.params.id },

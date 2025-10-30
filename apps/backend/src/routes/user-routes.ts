@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { UserController } from "@/controllers/user-controller";
+import { authenticate } from "@/middleware/authenticate";
 
 export class UserRoutes {
   public router: Router;
@@ -26,7 +27,7 @@ export class UserRoutes {
       this.userController.updateUser(req, res, next)
     );
 
-    this.router.delete("/users/:id", (req, res, next) =>
+    this.router.delete("/users/:id", authenticate, (req, res, next) =>
       this.userController.deleteUser(req, res, next)
     );
   }
