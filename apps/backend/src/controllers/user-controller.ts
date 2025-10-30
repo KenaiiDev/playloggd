@@ -100,6 +100,9 @@ export class UserController {
   }
 
   async updateUser(req: Request, res: Response, next: NextFunction) {
+    if (req.user?.id !== req.params.id) {
+      return next(new ValidationError("Unauthorized!"));
+    }
     try {
       const result = await updateProfile({
         dependencies: { userService: this.userService },
