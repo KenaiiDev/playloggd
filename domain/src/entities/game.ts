@@ -11,6 +11,6 @@ export interface Game extends GameBaseEntity {
   publisher?: string;
   coverUrl?: string;
   genres: string[];
-  platforms?: string;
+  platforms?: string[];
   rating: number;
 }

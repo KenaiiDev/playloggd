@@ -17,13 +17,10 @@ export const createMockGame = (overrides: Partial<Game> = {}): Game => {
       ["Action", "Adventure", "RPG", "Simulation", "Strategy", "Shooter"],
       { min: 1, max: 3 }
     ),
-    platforms: faker.helpers.arrayElement([
-      "PC",
-      "PlayStation 5",
-      "Xbox Series X",
-      "Nintendo Switch",
-      "Mobile",
-    ]),
+    platforms: faker.helpers.arrayElements(
+      ["PC", "PlayStation 5", "Xbox Series X", "Nintendo Switch", "Mobile"],
+      { min: 1, max: 3 }
+    ),
     rating: faker.number.float({ min: 0, max: 10 }),
     ...overrides,
   };
