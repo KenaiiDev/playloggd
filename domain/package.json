@@ -19,6 +19,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "rm -rf dist && tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "aliases": "tsc-alias",
     "build:verbose": "tsc --listFiles",
     "test": "vitest",
     "test:watch": "vitest watch",
