@@ -76,7 +76,7 @@ describe("Get Game By Filter Use Case", () => {
   });
 
   it("should return filtered games by platform", async () => {
-    const filter = { platforms: "PS5" };
+    const filter = { platforms: ["PS5"] };
     gameService.getByFilter.mockResolvedValue(mockGames);
 
     const result = await getGameByFilter({

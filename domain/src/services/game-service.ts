@@ -5,7 +5,7 @@ export interface GameFilter {
   developer?: string;
   publisher?: string;
   genres?: string[];
-  platforms?: string;
+  platforms?: string[];
   fromDate?: Date;
   toDate?: Date;
   minRating?: number;
