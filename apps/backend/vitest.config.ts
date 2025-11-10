@@ -1,7 +1,16 @@
 import { defineConfig } from "vitest/config";
 import { resolve } from "path";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  plugins: [
+    tsconfigPaths({
+      projects: [
+        resolve(__dirname, "tsconfig.json"),
+        resolve(__dirname, "../../domain/tsconfig.json"),
+      ],
+    }),
+  ],
   test: {
     globals: true,
     environment: "node",
@@ -16,6 +25,7 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
       "@domain": resolve(__dirname, "../../domain/dist"),
+      "@playloggd/domain": resolve(__dirname, "../../domain/dist"),
     },
   },
 });
