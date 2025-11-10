@@ -30,3 +30,18 @@ export const validateParams = (schema: ZodType) => {
     }
   };
 };
+
+export const validateQuery = (schema: ZodType) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse(req.query);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        next(error);
+      } else {
+        next(new Error("Unknown validation error"));
+      }
+    }
+  };
+};
