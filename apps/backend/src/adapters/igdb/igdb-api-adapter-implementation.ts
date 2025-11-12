@@ -19,7 +19,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     "rating_count",
     "created_at",
     "updated_at",
-  ].join(",");
+  ];
 
   constructor(private readonly client: IGDBApiClient) {}
 
@@ -59,7 +59,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: [`name ~ *"${query}"*`],
         limit: 10,
       })
@@ -71,7 +71,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: [`id = ${id}`],
         limit: 1,
       })
@@ -85,7 +85,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: ["rating != null", "rating_count > 20"], // Aseguramos que tenga suficientes votos
         sort: "rating desc",
         limit,
@@ -99,7 +99,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: [`first_release_date > ${now}`],
         sort: "first_release_date asc",
         limit,
@@ -115,7 +115,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: [
           `first_release_date <= ${now}`,
           `first_release_date >= ${threeMonthsAgo}`,
@@ -131,7 +131,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: ["rating_count != null"],
         sort: "rating_count desc",
         limit,
@@ -163,7 +163,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
-        fields: [this.DEFAULT_FIELDS],
+        fields: this.DEFAULT_FIELDS,
         where: conditions,
         limit: 50,
       })

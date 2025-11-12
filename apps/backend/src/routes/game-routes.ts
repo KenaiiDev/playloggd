@@ -21,12 +21,7 @@ export class GameRoutes {
   }
 
   private setupRoutes() {
-    this.router.get(
-      "/games/:gameId",
-      validateParams(getGameByIdSchema),
-      (req, res, next) => this.gameController.getById(req, res, next)
-    );
-
+    // Rutas específicas primero (antes de la ruta dinámica :gameId)
     this.router.get(
       "/games/search",
       validateQuery(searchGamesSchema),
@@ -63,6 +58,12 @@ export class GameRoutes {
       "/games/filter",
       validateQuery(getGamesByFilterSchema),
       (req, res, next) => this.gameController.getByFilter(req, res, next)
+    );
+
+    this.router.get(
+      "/games/:gameId",
+      validateParams(getGameByIdSchema),
+      (req, res, next) => this.gameController.getById(req, res, next)
     );
   }
 }

@@ -73,9 +73,12 @@ export class IGDBApiClient {
       offset = 0,
     } = options;
 
+    const whereClause = where.length > 0 ? `where ${where.join(" & ")};` : "";
+    console.log({ whereClause });
+
     const parts = [
       `fields ${fields.join(",")};`,
-      ...where.map((condition) => `where ${condition};`),
+      whereClause,
       sort && `sort ${sort};`,
       `limit ${limit};`,
       `offset ${offset};`,
