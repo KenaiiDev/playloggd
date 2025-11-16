@@ -159,6 +159,36 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
         `first_release_date <= ${Math.floor(filter.toDate.getTime() / 1000)}`
       );
     }
+    if (filter.developer) {
+      conditions.push(
+        `involved_companies.company.name ~ *"${filter.developer}"*`
+      );
+    }
+    if (filter.publisher) {
+      conditions.push(
+        `involved_companies.company.name ~ *"${filter.publisher}"*`
+      );
+    }
+    if (filter.genres && filter.genres.length > 0) {
+      const genreConditions = filter.genres
+        .map((genre) => `genres.name ~ *"${genre}"*`)
+        .join(" | ");
+      conditions.push(`(${genreConditions})`);
+    }
+    if (filter.platforms && filter.platforms.length > 0) {
+      const platformConditions = filter.platforms
+        .map((platform) => `platforms.name ~ *"${platform}"*`)
+        .join(" | ");
+      conditions.push(`(${platformConditions})`);
+    }
+
+    console.log(
+      IGDBApiClient.buildQuery({
+        fields: this.DEFAULT_FIELDS,
+        where: conditions,
+        limit: 50,
+      })
+    );
 
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",

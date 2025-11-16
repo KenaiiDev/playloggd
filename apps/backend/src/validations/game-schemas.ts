@@ -24,18 +24,22 @@ export const getUpcomingGamesSchema = limitQuerySchema;
 export const getRecentReleaseGamesSchema = limitQuerySchema;
 
 export const getGamesByFilterSchema = z.object({
-  genres: z.string().min(1, "Genre must not be empty").array().optional(),
-  platforms: z.string().min(1, "Platform must not be empty").array().optional(),
-  limit: z
+  genres: z
+    .union([z.string(), z.array(z.string())])
+    .transform((val) => (Array.isArray(val) ? val : [val]))
+    .optional(),
+  platforms: z
+    .union([z.string(), z.array(z.string())])
+    .transform((val) => (Array.isArray(val) ? val : [val]))
+    .optional(),
+  title: z.string().optional(),
+  developer: z.string().optional(),
+  publisher: z.string().optional(),
+  minRating: z
     .string()
-    .regex(/^\d+$/, "Limit must be a number")
+    .regex(/^\d+$/, "Rating must be a number")
     .transform(Number)
-    .refine((n) => n > 0, "Limit must be greater than 0")
-    .optional()
-    .transform((val) => val ?? 10),
-  sortBy: z.enum(["rating", "releaseDate", "title"]).optional(),
-  sortOrder: z
-    .enum(["asc", "desc"])
-    .optional()
-    .transform((val) => val ?? "desc"),
+    .optional(),
+  fromDate: z.string().optional(),
+  toDate: z.string().optional(),
 });
