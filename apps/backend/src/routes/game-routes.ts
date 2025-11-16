@@ -54,11 +54,11 @@ export class GameRoutes {
       (req, res, next) => this.gameController.getUpcomingGames(req, res, next)
     );
 
-    this.router.get(
-      "/games/filter",
-      validateQuery(getGamesByFilterSchema),
-      (req, res, next) => this.gameController.getByFilter(req, res, next)
-    );
+    // this.router.get(
+    //   "/games/filter",
+    //   validateQuery(getGamesByFilterSchema),
+    //   (req, res, next) => this.gameController.getByFilter(req, res, next)
+    // );
 
     this.router.get(
       "/games/:gameId",
