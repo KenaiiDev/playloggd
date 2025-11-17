@@ -7,19 +7,16 @@ import {
   updateProfile,
   NotFoundError,
   ValidationError,
+  UserService,
+  AuthService,
 } from "@playloggd/domain";
 import { httpResponse } from "../utils/http-response";
-import { UserServiceImplementation } from "@/services/user-service-implementation";
-import { AuthServiceImplementation } from "@/services/auth-service-implementation";
 
 export class UserController {
-  private userService: UserServiceImplementation;
-  private authService: AuthServiceImplementation;
+  private userService: UserService;
+  private authService: AuthService;
 
-  constructor(
-    userService: UserServiceImplementation,
-    authService: AuthServiceImplementation
-  ) {
+  constructor(userService: UserService, authService: AuthService) {
     this.userService = userService;
     this.authService = authService;
   }

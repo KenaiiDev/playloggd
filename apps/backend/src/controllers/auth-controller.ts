@@ -4,19 +4,16 @@ import {
   login,
   refreshToken,
   ValidationError,
+  AuthService,
+  UserService,
 } from "@playloggd/domain";
-import { AuthServiceImplementation } from "@/services/auth-service-implementation";
-import { UserServiceImplementation } from "@/services/user-service-implementation";
 import { httpResponse } from "@/utils/http-response";
 
 export class AuthController {
-  private authService: AuthServiceImplementation;
-  private userService: UserServiceImplementation;
+  private authService: AuthService;
+  private userService: UserService;
 
-  constructor(
-    userService: UserServiceImplementation,
-    authService: AuthServiceImplementation
-  ) {
+  constructor(userService: UserService, authService: AuthService) {
     this.userService = userService;
     this.authService = authService;
   }

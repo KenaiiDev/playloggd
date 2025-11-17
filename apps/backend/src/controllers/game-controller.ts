@@ -7,15 +7,15 @@ import {
   getTopRatedGames,
   getUpcomingGames,
   searchGame,
+  GameService,
 } from "@playloggd/domain";
 
-import { GameServiceImplementation } from "@/services/game-service-implementation";
 import { httpResponse } from "@/utils/http-response";
 
 export class GameController {
-  private gameService: GameServiceImplementation;
+  private gameService: GameService;
 
-  constructor(gameService: GameServiceImplementation) {
+  constructor(gameService: GameService) {
     this.gameService = gameService;
   }
 
