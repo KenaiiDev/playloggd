@@ -19,7 +19,7 @@ export async function getCollection({
 }: GetCollectionParams) {
   if (!payload.userId) throw new ValidationError("User id is required");
 
-  const userGameResult = await dependencies.userGameService.getUserGames(
+  const userGameResult = await dependencies.userGameService.getUserGameEntries(
     payload.userId
   );
 

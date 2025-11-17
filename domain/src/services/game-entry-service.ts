@@ -1,15 +1,15 @@
 import { GameStatus, GameEntry } from "@/entities/game-entry";
 
 export interface GameEntryService {
-  findUserGame: (
+  findGameEntry: (
     userId: string,
     gameId: string
   ) => Promise<GameEntry | undefined>;
-  addUserGame: (
+  addGameEntry: (
     data: Omit<GameEntry, "id" | "createdAt" | "updatedAt">
   ) => Promise<GameEntry>;
-  removeUserGame: (userId: string, gameId: string) => Promise<undefined>;
-  getUserGames: (userId: string) => Promise<GameEntry[]>;
+  removeGameEntry: (userId: string, gameId: string) => Promise<undefined>;
+  getUserGameEntries: (userId: string) => Promise<GameEntry[]>;
   updateGameStatus: ({
     userId,
     gameExternalId,

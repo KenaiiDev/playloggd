@@ -37,8 +37,8 @@ describe("Add To Collection Use Case", () => {
       updatedAt: new Date(),
     };
 
-    userGameService.findUserGame.mockResolvedValue(undefined);
-    userGameService.addUserGame.mockResolvedValue(expectedUserGame);
+    userGameService.findGameEntry.mockResolvedValue(undefined);
+    userGameService.addGameEntry.mockResolvedValue(expectedUserGame);
 
     const result = await addToCollection({
       dependencies: { userGameService },
@@ -46,11 +46,11 @@ describe("Add To Collection Use Case", () => {
     });
 
     expect(result).toEqual(expectedUserGame);
-    expect(userGameService.findUserGame).toHaveBeenCalledWith(
+    expect(userGameService.findGameEntry).toHaveBeenCalledWith(
       mockUser.id,
       mockGame.externalId
     );
-    expect(userGameService.addUserGame).toHaveBeenCalledWith(payload);
+    expect(userGameService.addGameEntry).toHaveBeenCalledWith(payload);
   });
 
   it("should throw error if game is already in collection", async () => {
@@ -67,7 +67,7 @@ describe("Add To Collection Use Case", () => {
       updatedAt: new Date(),
     };
 
-    userGameService.findUserGame.mockResolvedValue(existingUserGame);
+    userGameService.findGameEntry.mockResolvedValue(existingUserGame);
 
     await expect(
       addToCollection({
@@ -75,11 +75,11 @@ describe("Add To Collection Use Case", () => {
         payload,
       })
     ).rejects.toThrow(Error);
-    expect(userGameService.findUserGame).toHaveBeenCalledWith(
+    expect(userGameService.findGameEntry).toHaveBeenCalledWith(
       mockUser.id,
       mockGame.externalId
     );
-    expect(userGameService.addUserGame).not.toHaveBeenCalled();
+    expect(userGameService.addGameEntry).not.toHaveBeenCalled();
   });
 
   it("should throw error when userId is empty", async () => {
@@ -95,8 +95,8 @@ describe("Add To Collection Use Case", () => {
         payload,
       })
     ).rejects.toThrow(Error);
-    expect(userGameService.findUserGame).not.toHaveBeenCalled();
-    expect(userGameService.addUserGame).not.toHaveBeenCalled();
+    expect(userGameService.findGameEntry).not.toHaveBeenCalled();
+    expect(userGameService.addGameEntry).not.toHaveBeenCalled();
   });
 
   it("should throw error when gameExternalId is empty", async () => {
@@ -112,7 +112,7 @@ describe("Add To Collection Use Case", () => {
         payload,
       })
     ).rejects.toThrow(Error);
-    expect(userGameService.findUserGame).not.toHaveBeenCalled();
-    expect(userGameService.addUserGame).not.toHaveBeenCalled();
+    expect(userGameService.findGameEntry).not.toHaveBeenCalled();
+    expect(userGameService.addGameEntry).not.toHaveBeenCalled();
   });
 });

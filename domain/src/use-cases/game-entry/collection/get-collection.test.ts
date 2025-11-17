@@ -71,7 +71,7 @@ describe("Get Collection Use Case", () => {
       userId: mockUser.id,
     };
 
-    userGameService.getUserGames.mockResolvedValue(mockUserGames);
+    userGameService.getUserGameEntries.mockResolvedValue(mockUserGames);
     mockUserGames.forEach((userGame, index) => {
       gameService.getGameById.mockResolvedValueOnce(mockGames[index]);
     });
@@ -91,7 +91,9 @@ describe("Get Collection Use Case", () => {
         },
       }))
     );
-    expect(userGameService.getUserGames).toHaveBeenCalledWith(mockUser.id);
+    expect(userGameService.getUserGameEntries).toHaveBeenCalledWith(
+      mockUser.id
+    );
     mockUserGames.forEach((userGame) => {
       expect(gameService.getGameById).toHaveBeenCalledWith(
         userGame.gameExternalId
@@ -104,7 +106,7 @@ describe("Get Collection Use Case", () => {
       userId: mockUser.id,
     };
 
-    userGameService.getUserGames.mockResolvedValue([]);
+    userGameService.getUserGameEntries.mockResolvedValue([]);
 
     const result = await getCollection({
       dependencies: { userGameService },
@@ -112,7 +114,9 @@ describe("Get Collection Use Case", () => {
     });
 
     expect(result).toEqual([]);
-    expect(userGameService.getUserGames).toHaveBeenCalledWith(mockUser.id);
+    expect(userGameService.getUserGameEntries).toHaveBeenCalledWith(
+      mockUser.id
+    );
   });
 
   it("should throw error when userId is empty", async () => {
@@ -126,7 +130,7 @@ describe("Get Collection Use Case", () => {
         payload,
       })
     ).rejects.toThrow(Error);
-    expect(userGameService.getUserGames).not.toHaveBeenCalled();
+    expect(userGameService.getUserGameEntries).not.toHaveBeenCalled();
   });
 
   it("should filter collection by status when provided", async () => {
@@ -135,7 +139,7 @@ describe("Get Collection Use Case", () => {
       status: GameStatusEnum.PLAYING,
     };
 
-    userGameService.getUserGames.mockResolvedValue(mockUserGames);
+    userGameService.getUserGameEntries.mockResolvedValue(mockUserGames);
 
     const result = await getCollection({
       dependencies: { userGameService },
@@ -143,7 +147,9 @@ describe("Get Collection Use Case", () => {
     });
 
     expect(result).toEqual([mockUserGames[0]]);
-    expect(userGameService.getUserGames).toHaveBeenCalledWith(mockUser.id);
+    expect(userGameService.getUserGameEntries).toHaveBeenCalledWith(
+      mockUser.id
+    );
   });
 
   it("should return empty array when no games match status", async () => {
@@ -152,7 +158,7 @@ describe("Get Collection Use Case", () => {
       status: GameStatusEnum.DROPPED,
     };
 
-    userGameService.getUserGames.mockResolvedValue(mockUserGames);
+    userGameService.getUserGameEntries.mockResolvedValue(mockUserGames);
 
     const result = await getCollection({
       dependencies: { userGameService },
@@ -160,6 +166,8 @@ describe("Get Collection Use Case", () => {
     });
 
     expect(result).toEqual([]);
-    expect(userGameService.getUserGames).toHaveBeenCalledWith(mockUser.id);
+    expect(userGameService.getUserGameEntries).toHaveBeenCalledWith(
+      mockUser.id
+    );
   });
 });

@@ -20,14 +20,14 @@ export async function addToCollection({
   if (!payload.userId) throw new ValidationError("User id is required");
   if (!payload.gameExternalId) throw new ValidationError("Game id is required");
 
-  const dataFound = await dependencies.userGameService.findUserGame(
+  const dataFound = await dependencies.userGameService.findGameEntry(
     payload.userId,
     payload.gameExternalId
   );
   if (dataFound)
     throw new ConflictError("Game already has been added to this user");
 
-  const result = await dependencies.userGameService.addUserGame(payload);
+  const result = await dependencies.userGameService.addGameEntry(payload);
 
   return result;
 }

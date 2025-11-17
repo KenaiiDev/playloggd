@@ -18,13 +18,13 @@ export async function removeFromCollection({
   if (!payload.userId) throw new ValidationError("User id is required");
   if (!payload.gameExternalId) throw new ValidationError("Game id is required");
 
-  const dataFound = await dependencies.userGameService.findUserGame(
+  const dataFound = await dependencies.userGameService.findGameEntry(
     payload.userId,
     payload.gameExternalId
   );
   if (!dataFound) throw new NotFoundError("No data found");
 
-  const result = await dependencies.userGameService.removeUserGame(
+  const result = await dependencies.userGameService.removeGameEntry(
     payload.userId,
     payload.gameExternalId
   );
