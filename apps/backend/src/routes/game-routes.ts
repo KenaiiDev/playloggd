@@ -9,7 +9,7 @@ import {
   getRecentReleaseGamesSchema,
   getTopRatedGamesSchema,
   getUpcomingGamesSchema,
-  getGamesByFilterSchema,
+  // getGamesByFilterSchema,
 } from "@/validations/game-schemas";
 
 export class GameRoutes {
