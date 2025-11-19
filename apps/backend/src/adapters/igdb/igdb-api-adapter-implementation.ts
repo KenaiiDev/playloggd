@@ -182,14 +182,6 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
       conditions.push(`(${platformConditions})`);
     }
 
-    console.log(
-      IGDBApiClient.buildQuery({
-        fields: this.DEFAULT_FIELDS,
-        where: conditions,
-        limit: 50,
-      })
-    );
-
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({

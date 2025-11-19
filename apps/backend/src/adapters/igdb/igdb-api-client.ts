@@ -74,7 +74,6 @@ export class IGDBApiClient {
     } = options;
 
     const whereClause = where.length > 0 ? `where ${where.join(" & ")};` : "";
-    console.log({ whereClause });
 
     const parts = [
       `fields ${fields.join(",")};`,
