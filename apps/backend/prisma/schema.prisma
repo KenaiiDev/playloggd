@@ -6,7 +6,7 @@
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") // Required for SQLite
 }
 
 generator client {
@@ -52,6 +52,7 @@ model GameReview {
   updatedAt      DateTime  @updatedAt
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, gameExternalId])
   @@index([userId])
   @@index([gameExternalId])
 }

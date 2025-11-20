@@ -18,7 +18,7 @@
   "packageManager": "pnpm@10.18.0",
   "dependencies": {
     "@playloggd/domain": "workspace:*",
-    "@prisma/client": "^6.17.1",
+    "@prisma/client": "^6.19.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -34,7 +34,7 @@
     "@types/node": "^24.6.2",
     "@types/supertest": "^6.0.3",
     "node-mocks-http": "^1.17.2",
-    "prisma": "^6.17.1",
+    "prisma": "^6.19.0",
     "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
