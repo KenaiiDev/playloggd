@@ -7,10 +7,12 @@ import {
   buildAuthController,
   buildGameController,
   buildGameEntryController,
+  buildGameReviewController,
 } from "./config/";
 import { AuthRoutes } from "./routes/auth-routes";
 import { GameRoutes } from "./routes/game-routes";
 import { GameEntryRoutes } from "./routes/game-entry-routes";
+import { GameReviewRoutes } from "./routes/game-review-routes";
 
 export const app: Express = express();
 
@@ -33,10 +35,14 @@ const gameRoutes = new GameRoutes(gameController);
 const gameEntryController = buildGameEntryController();
 const gameEntryRoutes = new GameEntryRoutes(gameEntryController);
 
+const gameReviewController = buildGameReviewController();
+const gameReviewRoutes = new GameReviewRoutes(gameReviewController);
+
 app.use("/api", userRoutes.router);
 app.use("/api", authRoutes.router);
 app.use("/api", gameRoutes.router);
 app.use("/api", gameEntryRoutes.router);
+app.use("/api", gameReviewRoutes.router);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
