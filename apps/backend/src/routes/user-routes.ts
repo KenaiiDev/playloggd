@@ -44,6 +44,7 @@ export class UserRoutes {
       "/users/:id",
       validateBody(updateUserSchema),
       validateParams(updateUserIdSchema),
+      authenticate,
       (req, res, next) => this.userController.updateUser(req, res, next)
     );
 
