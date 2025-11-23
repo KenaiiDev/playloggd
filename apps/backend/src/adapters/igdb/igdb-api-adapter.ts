@@ -1,12 +1,31 @@
-import { Game, GameFilter } from "@playloggd/domain";
+import {
+  Game,
+  GameFilter,
+  PaginatedResponse,
+  PaginationParams,
+} from "@playloggd/domain";
 
 export interface IGDBApiAdapter {
-  searchGames(query: string): Promise<Game[]>;
+  searchGames(
+    query: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>>;
   getGameById(id: string): Promise<Game | undefined>;
-  getGamesByFilter(filter: GameFilter): Promise<Game[]>;
+  getGamesByFilter(
+    filter: GameFilter,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>>;
 
-  getMostPopularGames(limit: number): Promise<Game[]>;
-  getTopRatedGames(limit: number): Promise<Game[]>;
-  getUpcomingGames(limit: number): Promise<Game[]>;
-  getRecentReleaseGames(limit: number): Promise<Game[]>;
+  getMostPopularGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>>;
+  getTopRatedGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>>;
+  getUpcomingGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>>;
+  getRecentReleaseGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>>;
 }

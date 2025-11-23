@@ -19,6 +19,16 @@ export class GameController {
     this.gameService = gameService;
   }
 
+  private mapQueryParamsToDomain(query: { limit: string; offset: string }): {
+    limit: number;
+    offset: number;
+  } {
+    return {
+      limit: parseInt(query.limit),
+      offset: parseInt(query.offset),
+    };
+  }
+
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await getGameDetails({
@@ -38,16 +48,26 @@ export class GameController {
 
   async searchGames(req: Request, res: Response, next: NextFunction) {
     try {
+      const paginationParams = this.mapQueryParamsToDomain({
+        limit: req.query.limit as string,
+        offset: req.query.offset as string,
+      });
+
       const result = await searchGame({
         dependencies: {
           gameService: this.gameService,
         },
         payload: {
           query: req.query.q as string,
+          pagination: paginationParams,
         },
       });
 
-      return httpResponse.OK(res, result);
+      return res.status(200).json({
+        status: 200,
+        statusMsg: "Success",
+        ...result,
+      });
     } catch (error) {
       next(error);
     }
@@ -55,17 +75,24 @@ export class GameController {
 
   async getMostPopularGames(req: Request, res: Response, next: NextFunction) {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
+      const paginationParams = this.mapQueryParamsToDomain({
+        limit: req.query.limit as string,
+        offset: req.query.offset as string,
+      });
       const result = await getMostPopularGames({
         dependencies: {
           gameService: this.gameService,
         },
         payload: {
-          limit,
+          pagination: paginationParams,
         },
       });
 
-      return httpResponse.OK(res, result);
+      return res.status(200).json({
+        status: 200,
+        statusMsg: "Success",
+        ...result,
+      });
     } catch (error) {
       next(error);
     }
@@ -73,17 +100,24 @@ export class GameController {
 
   async getTopRatedGames(req: Request, res: Response, next: NextFunction) {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
+      const paginationParams = this.mapQueryParamsToDomain({
+        limit: req.query.limit as string,
+        offset: req.query.offset as string,
+      });
       const result = await getTopRatedGames({
         dependencies: {
           gameService: this.gameService,
         },
         payload: {
-          limit,
+          pagination: paginationParams,
         },
       });
 
-      return httpResponse.OK(res, result);
+      return res.status(200).json({
+        status: 200,
+        statusMsg: "Success",
+        ...result,
+      });
     } catch (error) {
       next(error);
     }
@@ -91,17 +125,24 @@ export class GameController {
 
   async getUpcomingGames(req: Request, res: Response, next: NextFunction) {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
+      const paginationParams = this.mapQueryParamsToDomain({
+        limit: req.query.limit as string,
+        offset: req.query.offset as string,
+      });
       const result = await getUpcomingGames({
         dependencies: {
           gameService: this.gameService,
         },
         payload: {
-          limit,
+          pagination: paginationParams,
         },
       });
 
-      return httpResponse.OK(res, result);
+      return res.status(200).json({
+        status: 200,
+        statusMsg: "Success",
+        ...result,
+      });
     } catch (error) {
       next(error);
     }
@@ -109,17 +150,24 @@ export class GameController {
 
   async getRecentReleaseGames(req: Request, res: Response, next: NextFunction) {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
+      const paginationParams = this.mapQueryParamsToDomain({
+        limit: req.query.limit as string,
+        offset: req.query.offset as string,
+      });
       const result = await getRecentReleaseGames({
         dependencies: {
           gameService: this.gameService,
         },
         payload: {
-          limit,
+          pagination: paginationParams,
         },
       });
 
-      return httpResponse.OK(res, result);
+      return res.status(200).json({
+        status: 200,
+        statusMsg: "Success",
+        ...result,
+      });
     } catch (error) {
       next(error);
     }
@@ -127,12 +175,17 @@ export class GameController {
 
   async getByFilter(req: Request, res: Response, next: NextFunction) {
     try {
-      const { genres, platforms, ...otherFilters } = req.query;
+      const { genres, platforms, limit, offset, ...otherFilters } = req.query;
       const filter = {
         genres: genres ? [genres as string] : undefined,
         platforms: platforms ? [platforms as string] : undefined,
         ...otherFilters,
       };
+
+      const paginationParams = this.mapQueryParamsToDomain({
+        limit: limit as string,
+        offset: offset as string,
+      });
 
       const result = await getGameByFilter({
         dependencies: {
@@ -140,10 +193,15 @@ export class GameController {
         },
         payload: {
           filter,
+          pagination: paginationParams,
         },
       });
 
-      return httpResponse.OK(res, result);
+      return res.status(200).json({
+        status: 200,
+        statusMsg: "Success",
+        ...result,
+      });
     } catch (error) {
       next(error);
     }

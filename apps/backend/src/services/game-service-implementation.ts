@@ -1,11 +1,21 @@
 import { IGDBApiAdapter } from "@/adapters/igdb/igdb-api-adapter";
-import { Game, GameFilter, GameService } from "@playloggd/domain";
+import {
+  Game,
+  GameFilter,
+  GameService,
+  PaginatedResponse,
+  PaginationParams,
+} from "@playloggd/domain";
 
 export class GameServiceImplementation implements GameService {
   constructor(private readonly igdbAdapter: IGDBApiAdapter) {}
 
-  async searchGames(query: string): Promise<Game[]> {
-    const result = await this.igdbAdapter.searchGames(query);
+  async searchGames(
+    query: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    console.log({ pagination });
+    const result = await this.igdbAdapter.searchGames(query, pagination);
     return result;
   }
 
@@ -14,28 +24,39 @@ export class GameServiceImplementation implements GameService {
     return result;
   }
 
-  async getByFilter(filter: GameFilter): Promise<Game[]> {
-    const result = await this.igdbAdapter.getGamesByFilter(filter);
+  async getByFilter(
+    filter: GameFilter,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const result = await this.igdbAdapter.getGamesByFilter(filter, pagination);
     return result;
   }
 
-  async getMostPopularGames(limit: number): Promise<Game[]> {
-    const result = await this.igdbAdapter.getMostPopularGames(limit);
+  async getMostPopularGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const result = await this.igdbAdapter.getMostPopularGames(pagination);
     return result;
   }
 
-  async getTopRatedGames(limit: number): Promise<Game[]> {
-    const result = await this.igdbAdapter.getTopRatedGames(limit);
+  async getTopRatedGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const result = await this.igdbAdapter.getTopRatedGames(pagination);
     return result;
   }
 
-  async getUpcomingGames(limit: number): Promise<Game[]> {
-    const result = await this.igdbAdapter.getUpcomingGames(limit);
+  async getUpcomingGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const result = await this.igdbAdapter.getUpcomingGames(pagination);
     return result;
   }
 
-  async getRecentReleaseGames(limit: number): Promise<Game[]> {
-    const result = await this.igdbAdapter.getRecentReleaseGames(limit);
+  async getRecentReleaseGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const result = await this.igdbAdapter.getRecentReleaseGames(pagination);
     return result;
   }
 }

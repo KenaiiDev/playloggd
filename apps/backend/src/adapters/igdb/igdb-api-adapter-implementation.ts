@@ -1,4 +1,9 @@
-import { Game, GameFilter } from "@playloggd/domain";
+import {
+  Game,
+  GameFilter,
+  PaginatedResponse,
+  PaginationParams,
+} from "@playloggd/domain";
 import { IGDBApiAdapter } from "./igdb-api-adapter";
 import { IGDBApiClient } from "./igdb-api-client";
 import type { IGDBGameResponse } from "./types/igdb-types";
@@ -55,16 +60,35 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     };
   }
 
-  async searchGames(query: string): Promise<Game[]> {
+  async searchGames(
+    query: string,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const limit = pagination?.limit ?? 10;
+    const offset = pagination?.offset ?? 0;
+
     const response = await this.client.post<IGDBGameResponse[]>(
       "games",
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: [`name ~ *"${query}"*`],
-        limit: 10,
+        sort: "id asc",
+        limit,
+        offset,
       })
     );
-    return response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    const games = response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    return {
+      data: games,
+      pagination: {
+        total: games.length + offset,
+        limit,
+        offset,
+        hasMore: games.length === limit,
+      },
+    };
   }
 
   async getGameById(id: string): Promise<Game | undefined> {
@@ -81,34 +105,72 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
       : undefined;
   }
 
-  async getTopRatedGames(limit: number): Promise<Game[]> {
+  async getTopRatedGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const limit = pagination?.limit ?? 10;
+    const offset = pagination?.offset ?? 0;
+
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
-        where: ["rating != null", "rating_count > 20"], // Aseguramos que tenga suficientes votos
-        sort: "rating desc",
+        where: ["rating != null", "rating_count > 20"],
+        sort: "rating desc, id asc",
         limit,
+        offset,
       })
     );
-    return response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    const games = response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    return {
+      data: games,
+      pagination: {
+        total: games.length + offset,
+        limit,
+        offset,
+        hasMore: games.length === limit,
+      },
+    };
   }
 
-  async getUpcomingGames(limit: number): Promise<Game[]> {
+  async getUpcomingGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const limit = pagination?.limit ?? 10;
+    const offset = pagination?.offset ?? 0;
     const now = Math.floor(Date.now() / 1000);
+
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: [`first_release_date > ${now}`],
-        sort: "first_release_date asc",
+        sort: "first_release_date asc, id asc",
         limit,
+        offset,
       })
     );
-    return response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    const games = response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    return {
+      data: games,
+      pagination: {
+        total: games.length + offset,
+        limit,
+        offset,
+        hasMore: games.length === limit,
+      },
+    };
   }
 
-  async getRecentReleaseGames(limit: number): Promise<Game[]> {
+  async getRecentReleaseGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const limit = pagination?.limit ?? 10;
+    const offset = pagination?.offset ?? 0;
     const now = Math.floor(Date.now() / 1000);
     const threeMonthsAgo = now - 90 * 24 * 60 * 60;
 
@@ -120,27 +182,61 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
           `first_release_date <= ${now}`,
           `first_release_date >= ${threeMonthsAgo}`,
         ],
-        sort: "first_release_date desc",
+        sort: "first_release_date desc, id asc",
         limit,
+        offset,
       })
     );
-    return response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    const games = response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    return {
+      data: games,
+      pagination: {
+        total: games.length + offset,
+        limit,
+        offset,
+        hasMore: games.length === limit,
+      },
+    };
   }
 
-  async getMostPopularGames(limit: number): Promise<Game[]> {
+  async getMostPopularGames(
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const limit = pagination?.limit ?? 10;
+    const offset = pagination?.offset ?? 0;
+
     const response = await this.client.post<IGDBGameResponse[]>(
       "/games",
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: ["rating_count != null"],
-        sort: "rating_count desc",
+        sort: "rating_count desc, id asc",
         limit,
+        offset,
       })
     );
-    return response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    const games = response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    return {
+      data: games,
+      pagination: {
+        total: games.length + offset,
+        limit,
+        offset,
+        hasMore: games.length === limit,
+      },
+    };
   }
 
-  async getGamesByFilter(filter: GameFilter): Promise<Game[]> {
+  async getGamesByFilter(
+    filter: GameFilter,
+    pagination?: PaginationParams
+  ): Promise<PaginatedResponse<Game>> {
+    const limit = pagination?.limit ?? 50;
+    const offset = pagination?.offset ?? 0;
     const conditions: string[] = [];
 
     if (filter.title) {
@@ -187,9 +283,22 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: conditions,
-        limit: 50,
+        sort: "id asc",
+        limit,
+        offset,
       })
     );
-    return response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    const games = response.data.map((game) => this.mapIGDBGameToGame(game));
+
+    return {
+      data: games,
+      pagination: {
+        total: games.length + offset,
+        limit,
+        offset,
+        hasMore: games.length === limit,
+      },
+    };
   }
 }

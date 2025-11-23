@@ -10,15 +10,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   }
   const token = authHeader?.split(" ")[1];
   try {
-    console.log("Try");
     const payload = accessTokenManager.verify(token) as JwtPayload;
-    console.log("after verify");
-    console.log({ payload });
     if (!payload) throw new UnauthorizedError("Invalid token");
     req.user = { id: payload.userId };
     next();
   } catch (error) {
-    console.log("Catch");
     next(error);
   }
 }
