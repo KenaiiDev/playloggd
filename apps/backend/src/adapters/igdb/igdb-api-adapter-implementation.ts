@@ -116,7 +116,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: ["rating != null", "rating_count > 20"],
-        sort: "rating desc, id asc",
+        sort: "rating desc",
         limit,
         offset,
       })
@@ -147,7 +147,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: [`first_release_date > ${now}`],
-        sort: "first_release_date asc, id asc",
+        sort: "first_release_date asc",
         limit,
         offset,
       })
@@ -182,7 +182,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
           `first_release_date <= ${now}`,
           `first_release_date >= ${threeMonthsAgo}`,
         ],
-        sort: "first_release_date desc, id asc",
+        sort: "first_release_date desc",
         limit,
         offset,
       })
@@ -212,7 +212,7 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
         where: ["rating_count != null"],
-        sort: "rating_count desc, id asc",
+        sort: "rating_count desc",
         limit,
         offset,
       })
