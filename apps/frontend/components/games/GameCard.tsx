@@ -1,11 +1,8 @@
-import { Card, CardContent, CardHeader, Badge, Button } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, Badge } from "@/components/ui";
 import Image from "next/image";
-import { GenreBadge } from "./GenreBadge";
 import GenresContainer from "./GenresContainer";
-import { Gamepad2, Heart, MoreHorizontal } from "lucide-react";
 import GameActionButtons from "./GameActionButtons";
-import { GAME_STATUS, GameStatusEnum } from "@/types";
+import { GameStatusEnum } from "@/types";
 
 type GameCardProps = {
   title: string;
@@ -13,12 +10,10 @@ type GameCardProps = {
   rating: number;
   imageUrl: string;
   description: string;
-  recommended: boolean;
   genres: string[];
-  currentStatus: GameStatusEnum;
-
+  currentStatus?: GameStatusEnum;
+  recommended?: boolean;
   onStatusChange?: (status: GameStatusEnum) => void;
-  onCreateNewList: (name: string) => void;
 };
 
 export function GameCard({
@@ -27,13 +22,13 @@ export function GameCard({
   imageUrl,
   description,
   genres,
-  recommended,
   currentStatus,
+  recommended,
 
   onStatusChange,
 }: GameCardProps) {
   return (
-    <Card className="bg-card text-card-foreground py-0 gap-0 shadow-md w-full max-w-xs">
+    <Card className="bg-card text-card-foreground py-0 gap-0 shadow-md w-full">
       <CardHeader className="p-0">
         <div className="relative group overflow-hidden aspect-3/4">
           <Image
