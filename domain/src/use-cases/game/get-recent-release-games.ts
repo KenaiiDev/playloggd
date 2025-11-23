@@ -1,11 +1,12 @@
 import { GameService } from "@/services";
+import { PaginationParams } from "@/utils";
 
 interface GetRecentReleaseGamesParams {
   dependencies: {
     gameService: GameService;
   };
   payload: {
-    limit?: number;
+    pagination?: PaginationParams;
   };
 }
 
@@ -14,7 +15,7 @@ export async function getRecentReleaseGames({
   payload,
 }: GetRecentReleaseGamesParams) {
   const result = await dependencies.gameService.getRecentReleaseGames(
-    payload.limit || 10
+    payload.pagination
   );
   return result;
 }

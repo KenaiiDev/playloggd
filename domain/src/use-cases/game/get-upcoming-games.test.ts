@@ -11,18 +11,9 @@ describe("Get Upcoming Games Use Case", () => {
   const futureDate3 = new Date("2026-06-30");
 
   const mockGames = [
-    createMockGame({
-      title: "Final Fantasy XVI-2",
-      releaseDate: futureDate1,
-    }),
-    createMockGame({
-      title: "GTA VI",
-      releaseDate: futureDate2,
-    }),
-    createMockGame({
-      title: "Elder Scrolls VI",
-      releaseDate: futureDate3,
-    }),
+    createMockGame({ title: "Final Fantasy XVI-2", releaseDate: futureDate1 }),
+    createMockGame({ title: "GTA VI", releaseDate: futureDate2 }),
+    createMockGame({ title: "Elder Scrolls VI", releaseDate: futureDate3 }),
   ];
 
   const gameService = createGameServiceMock();
@@ -31,45 +22,67 @@ describe("Get Upcoming Games Use Case", () => {
     mockReset(gameService);
   });
 
-  it("should return upcoming games when request is successful", async () => {
-    gameService.getUpcomingGames.mockResolvedValue(mockGames);
+  it("should return paginated upcoming games when request is successful", async () => {
+    gameService.getUpcomingGames.mockResolvedValue({
+      data: mockGames,
+      pagination: {
+        total: 3,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      },
+    });
 
     const result = await getUpcomingGames({
       dependencies: { gameService },
-      payload: { limit: 3 },
+      payload: { pagination: { limit: 3 } },
     });
 
-    if (!Array.isArray(result)) {
-      throw new Error("Expected result to be an array of games");
-    }
-
-    expect(result).toHaveLength(3);
-    expect(gameService.getUpcomingGames).toHaveBeenCalledWith(3);
-    expect(result).toEqual(mockGames);
+    expect(result.data).toHaveLength(3);
+    expect(gameService.getUpcomingGames).toHaveBeenCalledWith({ limit: 3 });
+    expect(result.data).toEqual(mockGames);
   });
 
-  it("should return empty array when no upcoming games are found", async () => {
-    gameService.getUpcomingGames.mockResolvedValue([]);
+  it("should pass pagination parameters to service", async () => {
+    const pagination = { limit: 5, offset: 10 };
+
+    gameService.getUpcomingGames.mockResolvedValue({
+      data: mockGames.slice(0, 2),
+      pagination: {
+        total: 12,
+        limit: 5,
+        offset: 10,
+        hasMore: false,
+      },
+    });
 
     const result = await getUpcomingGames({
       dependencies: { gameService },
-      payload: { limit: 3 },
+      payload: { pagination },
     });
 
-    expect(result).toHaveLength(0);
-    expect(gameService.getUpcomingGames).toHaveBeenCalledWith(3);
+    expect(result.data).toHaveLength(2);
+    expect(gameService.getUpcomingGames).toHaveBeenCalledWith(pagination);
   });
 
-  it("should use default limit when no limit is provided", async () => {
-    gameService.getUpcomingGames.mockResolvedValue(mockGames.slice(0, 2));
+  it("should return empty data array when no upcoming games are found", async () => {
+    gameService.getUpcomingGames.mockResolvedValue({
+      data: [],
+      pagination: {
+        total: 0,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      },
+    });
 
     const result = await getUpcomingGames({
       dependencies: { gameService },
       payload: {},
     });
 
-    expect(result).toHaveLength(2);
-    expect(gameService.getUpcomingGames).toHaveBeenCalledWith(10);
+    expect(result.data).toHaveLength(0);
+    expect(gameService.getUpcomingGames).toHaveBeenCalledWith(undefined);
   });
 
   it("should throw error when service fails", async () => {
@@ -79,7 +92,7 @@ describe("Get Upcoming Games Use Case", () => {
     await expect(
       getUpcomingGames({
         dependencies: { gameService },
-        payload: { limit: 3 },
+        payload: { pagination: { limit: 3 } },
       })
     ).rejects.toThrow("Service error");
   });

@@ -1,5 +1,6 @@
 import { ValidationError } from "@/errors";
 import { GameService } from "@/services/";
+import { PaginationParams } from "@/utils";
 
 interface SearchGameParams {
   dependencies: {
@@ -7,6 +8,7 @@ interface SearchGameParams {
   };
   payload: {
     query: string;
+    pagination?: PaginationParams;
   };
 }
 
@@ -16,7 +18,11 @@ export async function searchGame({ dependencies, payload }: SearchGameParams) {
     throw new ValidationError(
       "Search query must be at least 2 characters long"
     );
-  const result = await dependencies.gameService.searchGames(payload.query);
+
+  const result = await dependencies.gameService.searchGames(
+    payload.query,
+    payload.pagination
+  );
 
   return result;
 }

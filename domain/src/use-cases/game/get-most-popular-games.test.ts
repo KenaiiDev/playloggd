@@ -18,45 +18,67 @@ describe("Get Most Popular Games Use Case", () => {
     mockReset(gameService);
   });
 
-  it("should return most popular games when request is successful", async () => {
-    gameService.getMostPopularGames.mockResolvedValue(mockGames);
+  it("should return paginated popular games when request is successful", async () => {
+    gameService.getMostPopularGames.mockResolvedValue({
+      data: mockGames,
+      pagination: {
+        total: 3,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      },
+    });
 
     const result = await getMostPopularGames({
       dependencies: { gameService },
-      payload: { limit: 3 },
+      payload: { pagination: { limit: 3 } },
     });
 
-    if (!Array.isArray(result)) {
-      throw new Error("Expected result to be an array of games");
-    }
-
-    expect(result).toHaveLength(3);
-    expect(gameService.getMostPopularGames).toHaveBeenCalledWith(3);
-    expect(result).toEqual(mockGames);
+    expect(result.data).toHaveLength(3);
+    expect(gameService.getMostPopularGames).toHaveBeenCalledWith({ limit: 3 });
+    expect(result.data).toEqual(mockGames);
   });
 
-  it("should return empty array when no games are found", async () => {
-    gameService.getMostPopularGames.mockResolvedValue([]);
+  it("should pass pagination parameters to service", async () => {
+    const pagination = { limit: 5, offset: 10 };
+
+    gameService.getMostPopularGames.mockResolvedValue({
+      data: mockGames.slice(0, 2),
+      pagination: {
+        total: 12,
+        limit: 5,
+        offset: 10,
+        hasMore: false,
+      },
+    });
 
     const result = await getMostPopularGames({
       dependencies: { gameService },
-      payload: { limit: 3 },
+      payload: { pagination },
     });
 
-    expect(result).toHaveLength(0);
-    expect(gameService.getMostPopularGames).toHaveBeenCalledWith(3);
+    expect(result.data).toHaveLength(2);
+    expect(gameService.getMostPopularGames).toHaveBeenCalledWith(pagination);
   });
 
-  it("should use default limit when no limit is provided", async () => {
-    gameService.getMostPopularGames.mockResolvedValue(mockGames.slice(0, 2));
+  it("should return empty data array when no games are found", async () => {
+    gameService.getMostPopularGames.mockResolvedValue({
+      data: [],
+      pagination: {
+        total: 0,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      },
+    });
 
     const result = await getMostPopularGames({
       dependencies: { gameService },
       payload: {},
     });
 
-    expect(result).toHaveLength(2);
-    expect(gameService.getMostPopularGames).toHaveBeenCalledWith(10);
+    expect(result.data).toHaveLength(0);
+    expect(gameService.getMostPopularGames).toHaveBeenCalledWith(undefined);
   });
 
   it("should throw error when service fails", async () => {
@@ -66,7 +88,7 @@ describe("Get Most Popular Games Use Case", () => {
     await expect(
       getMostPopularGames({
         dependencies: { gameService },
-        payload: { limit: 3 },
+        payload: { pagination: { limit: 3 } },
       })
     ).rejects.toThrow("Service error");
   });

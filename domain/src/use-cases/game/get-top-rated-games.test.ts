@@ -7,18 +7,9 @@ import { getTopRatedGames } from "./get-top-rated-games";
 
 describe("Get Top Rated Games Use Case", () => {
   const mockGames = [
-    createMockGame({
-      title: "The Last of Us",
-      rating: 98,
-    }),
-    createMockGame({
-      title: "Red Dead Redemption 2",
-      rating: 97,
-    }),
-    createMockGame({
-      title: "God of War",
-      rating: 96,
-    }),
+    createMockGame({ title: "The Last of Us", rating: 98 }),
+    createMockGame({ title: "Red Dead Redemption 2", rating: 97 }),
+    createMockGame({ title: "God of War", rating: 96 }),
   ];
 
   const gameService = createGameServiceMock();
@@ -27,47 +18,73 @@ describe("Get Top Rated Games Use Case", () => {
     mockReset(gameService);
   });
 
-  it("should return top rated games when request is successful", async () => {
-    gameService.getTopRatedGames.mockResolvedValue(mockGames);
+  it("should return paginated top rated games when request is successful", async () => {
+    gameService.getTopRatedGames.mockResolvedValue({
+      data: mockGames,
+      pagination: {
+        total: 3,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      },
+    });
 
     const result = await getTopRatedGames({
       dependencies: { gameService },
-      payload: { limit: 3 },
+      payload: { pagination: { limit: 3 } },
     });
 
-    if (!Array.isArray(result)) {
-      throw new Error("Expected result to be an array of games");
-    }
-
-    expect(result).toHaveLength(3);
-    expect(gameService.getTopRatedGames).toHaveBeenCalledWith(3);
-    expect(result).toEqual(mockGames);
-    expect(result[0].rating).toBeGreaterThanOrEqual(result[1].rating);
-    expect(result[1].rating).toBeGreaterThanOrEqual(result[2].rating);
+    expect(result.data).toHaveLength(3);
+    expect(gameService.getTopRatedGames).toHaveBeenCalledWith({ limit: 3 });
+    expect(result.data).toEqual(mockGames);
+    expect(result.data[0].rating).toBeGreaterThanOrEqual(
+      result.data[1].rating!
+    );
+    expect(result.data[1].rating).toBeGreaterThanOrEqual(
+      result.data[2].rating!
+    );
   });
 
-  it("should return empty array when no games are found", async () => {
-    gameService.getTopRatedGames.mockResolvedValue([]);
+  it("should pass pagination parameters to service", async () => {
+    const pagination = { limit: 5, offset: 10 };
+
+    gameService.getTopRatedGames.mockResolvedValue({
+      data: mockGames.slice(0, 2),
+      pagination: {
+        total: 12,
+        limit: 5,
+        offset: 10,
+        hasMore: false,
+      },
+    });
 
     const result = await getTopRatedGames({
       dependencies: { gameService },
-      payload: { limit: 3 },
+      payload: { pagination },
     });
 
-    expect(result).toHaveLength(0);
-    expect(gameService.getTopRatedGames).toHaveBeenCalledWith(3);
+    expect(result.data).toHaveLength(2);
+    expect(gameService.getTopRatedGames).toHaveBeenCalledWith(pagination);
   });
 
-  it("should use default limit when no limit is provided", async () => {
-    gameService.getTopRatedGames.mockResolvedValue(mockGames.slice(0, 2));
+  it("should return empty data array when no games are found", async () => {
+    gameService.getTopRatedGames.mockResolvedValue({
+      data: [],
+      pagination: {
+        total: 0,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      },
+    });
 
     const result = await getTopRatedGames({
       dependencies: { gameService },
       payload: {},
     });
 
-    expect(result).toHaveLength(2);
-    expect(gameService.getTopRatedGames).toHaveBeenCalledWith(10);
+    expect(result.data).toHaveLength(0);
+    expect(gameService.getTopRatedGames).toHaveBeenCalledWith(undefined);
   });
 
   it("should throw error when service fails", async () => {
@@ -77,7 +94,7 @@ describe("Get Top Rated Games Use Case", () => {
     await expect(
       getTopRatedGames({
         dependencies: { gameService },
-        payload: { limit: 3 },
+        payload: { pagination: { limit: 3 } },
       })
     ).rejects.toThrow("Service error");
   });

@@ -1,4 +1,5 @@
 import type { Game } from "@/entities";
+import type { PaginatedResponse, PaginationParams } from "@/utils";
 
 export interface GameFilter {
   title?: string;
@@ -11,11 +12,25 @@ export interface GameFilter {
   minRating?: number;
 }
 export interface GameService {
-  searchGames: (query: string) => Promise<Game[]>;
+  searchGames: (
+    query: string,
+    pagination?: PaginationParams
+  ) => Promise<PaginatedResponse<Game>>;
   getGameById: (id: string) => Promise<Game | undefined>;
-  getByFilter: (filter: GameFilter) => Promise<Game[]>;
-  getMostPopularGames: (limit: number) => Promise<Game[]>;
-  getTopRatedGames: (limit: number) => Promise<Game[]>;
-  getUpcomingGames: (limit: number) => Promise<Game[]>;
-  getRecentReleaseGames: (limit: number) => Promise<Game[]>;
+  getByFilter: (
+    filter: GameFilter,
+    pagination?: PaginationParams
+  ) => Promise<PaginatedResponse<Game>>;
+  getMostPopularGames: (
+    pagination?: PaginationParams
+  ) => Promise<PaginatedResponse<Game>>;
+  getTopRatedGames: (
+    pagination?: PaginationParams
+  ) => Promise<PaginatedResponse<Game>>;
+  getUpcomingGames: (
+    pagination?: PaginationParams
+  ) => Promise<PaginatedResponse<Game>>;
+  getRecentReleaseGames: (
+    pagination?: PaginationParams
+  ) => Promise<PaginatedResponse<Game>>;
 }
