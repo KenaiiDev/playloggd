@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/lib/hooks/use-games";
+import { useAuthStore } from "@/stores/auth-store";
+import { useGameCollectionStore } from "@/stores/game-collection-store";
 import {
   Alert,
   AlertDescription,
@@ -29,11 +31,51 @@ export default function GameDetailsPage() {
   const gameId = params.id as string;
 
   const { data: game, isLoading, error } = useGame(gameId);
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { getGameEntry, addGame, updateStatus, removeGame } =
+    useGameCollectionStore();
+
   const [currentStatus, setCurrentStatus] = useState<GameStatus | null>(null);
 
-  const handleStatusChange = (status: GameStatus) => {
-    setCurrentStatus(status);
-    console.log("Status changed:", status);
+  // Cargar estado inicial desde el store
+  useEffect(() => {
+    const entry = getGameEntry(gameId);
+    if (entry) {
+      setCurrentStatus(entry.status);
+    } else {
+      setCurrentStatus(null);
+    }
+  }, [gameId, getGameEntry]);
+
+  const handleStatusChange = async (status: GameStatus) => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      // Si hacen click en el mismo status que ya está seleccionado, eliminar
+      if (currentStatus === status) {
+        await removeGame(gameId);
+        setCurrentStatus(null);
+        return;
+      }
+
+      const existingEntry = getGameEntry(gameId);
+
+      if (existingEntry) {
+        // Actualizar status existente
+        await updateStatus(gameId, status);
+      } else {
+        // Agregar nuevo juego a la colección
+        await addGame(gameId, status);
+      }
+
+      setCurrentStatus(status);
+    } catch (error) {
+      console.error("Failed to update game status:", error);
+    }
   };
 
   const STATUS_LABELS: Record<string, string> = {
