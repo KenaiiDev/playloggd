@@ -164,9 +164,10 @@ export default function Home() {
             {data.games.map((game) => (
               <GameCard
                 key={game.externalId}
+                gameId={game.externalId}
                 title={game.title}
                 genre={game.genres[0] || ""}
-                rating={game.rating / 10} // Convertir de 0-100 a 0-10
+                rating={game.rating / 10}
                 imageUrl={game.coverUrl || "/placeholder-game.jpg"}
                 description={game.description || ""}
                 genres={game.genres}
