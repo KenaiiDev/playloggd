@@ -1,18 +1,14 @@
-import { Gamepad2, Heart } from "lucide-react";
-import React, { useState } from "react";
+import { Gamepad2 } from "lucide-react";
 
 import {
   Button,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuLabel,
-  Input,
 } from "@/components/ui";
 
 import { GAME_STATUS, GameStatusEnum } from "@/types";
