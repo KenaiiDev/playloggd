@@ -11,33 +11,33 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui";
 
-import { GAME_STATUS, GameStatusEnum } from "@/types";
+import { GameStatus, GameStatusEnum } from "@playloggd/domain";
 
 interface GameActionButtonsProps {
-  currentStatus?: GameStatusEnum;
+  currentStatus?: GameStatus;
 
-  onStatusChange?: (status: GameStatusEnum) => void;
+  onStatusChange?: (status: GameStatus) => void;
 }
 
 const STATUS_LABELS = {
-  [GAME_STATUS.WISHLIST]: "Want to Play",
-  [GAME_STATUS.BACKLOG]: "Backlog",
-  [GAME_STATUS.PLAYING]: "Currently Playing",
-  [GAME_STATUS.ON_HOLD]: "On Hold",
-  [GAME_STATUS.COMPLETED]: "Completed",
-  [GAME_STATUS.FULLY_COMPLETED]: "100% Completed",
-  [GAME_STATUS.DROPPED]: "Dropped",
-  [GAME_STATUS.NOT_FOR_ME]: "Not for Me",
-  [GAME_STATUS.REPLAY]: "Replaying",
-  [GAME_STATUS.REVIEWING]: "Reviewing",
+  [GameStatusEnum.WISHLIST]: "Want to Play",
+  [GameStatusEnum.BACKLOG]: "Backlog",
+  [GameStatusEnum.PLAYING]: "Currently Playing",
+  [GameStatusEnum.ON_HOLD]: "On Hold",
+  [GameStatusEnum.COMPLETED]: "Completed",
+  [GameStatusEnum.FULLY_COMPLETED]: "100% Completed",
+  [GameStatusEnum.DROPPED]: "Dropped",
+  [GameStatusEnum.NOT_FOR_ME]: "Not for Me",
+  [GameStatusEnum.REPLAY]: "Replaying",
+  [GameStatusEnum.REVIEWING]: "Reviewing",
 } as const;
 
 const STATUS_GROUPS = {
-  planning: [GAME_STATUS.WISHLIST, GAME_STATUS.BACKLOG],
-  active: [GAME_STATUS.PLAYING, GAME_STATUS.ON_HOLD],
-  finished: [GAME_STATUS.COMPLETED, GAME_STATUS.FULLY_COMPLETED],
-  abandoned: [GAME_STATUS.DROPPED, GAME_STATUS.NOT_FOR_ME],
-  special: [GAME_STATUS.REPLAY, GAME_STATUS.REVIEWING],
+  planning: [GameStatusEnum.WISHLIST, GameStatusEnum.BACKLOG],
+  active: [GameStatusEnum.PLAYING, GameStatusEnum.ON_HOLD],
+  finished: [GameStatusEnum.COMPLETED, GameStatusEnum.FULLY_COMPLETED],
+  abandoned: [GameStatusEnum.DROPPED, GameStatusEnum.NOT_FOR_ME],
+  special: [GameStatusEnum.REPLAY, GameStatusEnum.REVIEWING],
 } as const;
 
 export default function GameActionButtons({
@@ -59,7 +59,7 @@ export default function GameActionButtons({
         <DropdownMenuContent align="center" className="w-56">
           <DropdownMenuRadioGroup
             value={currentStatus}
-            onValueChange={(value) => onStatusChange?.(value as GameStatusEnum)}
+            onValueChange={(value) => onStatusChange?.(value as GameStatus)}
           >
             <DropdownMenuLabel>Planning</DropdownMenuLabel>
             {STATUS_GROUPS.planning.map((status) => (

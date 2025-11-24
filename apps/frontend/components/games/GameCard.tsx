@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, Badge } from "@/components/ui";
 import Image from "next/image";
 import GenresContainer from "./GenresContainer";
 import GameActionButtons from "./GameActionButtons";
-import { GameStatusEnum } from "@/types";
+import { GameStatus } from "@playloggd/domain";
 
 type GameCardProps = {
   title: string;
@@ -11,9 +11,9 @@ type GameCardProps = {
   imageUrl: string;
   description: string;
   genres: string[];
-  currentStatus?: GameStatusEnum;
+  currentStatus?: GameStatus;
   recommended?: boolean;
-  onStatusChange?: (status: GameStatusEnum) => void;
+  onStatusChange?: (status: GameStatus) => void;
 };
 
 export function GameCard({

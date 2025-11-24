@@ -15,7 +15,8 @@ export default function GenresContainer({ genres }: GenresContainerProps) {
   if (genres.length <= 3)
     return (
       <div className="w-full flex flex-wrap items-start gap-2">
-        {genres && genres.map((genre) => <GenreBadge genre={genre} />)}
+        {genres &&
+          genres.map((genre) => <GenreBadge key={genre} genre={genre} />)}
       </div>
     );
 
@@ -28,7 +29,7 @@ export default function GenresContainer({ genres }: GenresContainerProps) {
           <GenreBadge genre={genres[2]} />
         </>
       ) : (
-        genres.map((genre) => <GenreBadge genre={genre} />)
+        genres.map((genre) => <GenreBadge key={genre} genre={genre} />)
       )}
       <Button
         variant="ghost"

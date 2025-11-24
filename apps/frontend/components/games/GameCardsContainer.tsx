@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { GameCard } from "./GameCard";
 import { PaginationControls } from "./PaginationControls";
-import { Game, GameStatusEnum } from "@/types";
+import { GameStatus, Game } from "@playloggd/domain";
 import {
   Select,
   SelectContent,
@@ -14,8 +14,8 @@ import {
 
 type GameCardsContainerProps = {
   games: Game[];
-  onStatusChange?: (gameId: string, status: GameStatusEnum) => void;
-  getUserGameStatus?: (gameId: string) => GameStatusEnum | undefined;
+  onStatusChange?: (gameId: string, status: GameStatus) => void;
+  getUserGameStatus?: (gameId: string) => GameStatus | undefined;
 };
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 36, 48] as const;
@@ -46,10 +46,10 @@ export function GameCardsContainer({
 
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value));
-    setCurrentPage(1); // Reset to first page when changing items per page
+    setCurrentPage(1);
   };
 
-  const handleStatusChange = (gameId: string) => (status: GameStatusEnum) => {
+  const handleStatusChange = (gameId: string) => (status: GameStatus) => {
     onStatusChange?.(gameId, status);
   };
 
