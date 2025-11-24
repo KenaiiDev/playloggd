@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GameCardsContainer } from "./GameCardsContainer";
-import { GAME_STATUS, Game } from "@/types";
+import { GameStatusEnum as GAME_STATUS, Game } from "@playloggd/domain";
 
 const meta: Meta<typeof GameCardsContainer> = {
   title: "Components/Games/GameCardsContainer",

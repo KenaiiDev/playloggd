@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import GameActionButtons from "./GameActionButtons";
-import { GAME_STATUS, UserList } from "@/types";
+import { GameStatus, GameStatusEnum } from "@playloggd/domain";
 
 const meta: Meta<typeof GameActionButtons> = {
   title: "Components/Games/GameActionButtons",
@@ -16,23 +16,9 @@ type Story = StoryObj<typeof GameActionButtons>;
 
 export const Default: Story = {
   args: {
-    lists: [
-      {
-        id: 0,
-        checked: false,
-        name: "Likes",
-        createdAt: new Date(),
-      },
-    ],
-    currentStatus: GAME_STATUS.BACKLOG,
-    onAddToList: (id: UserList["id"]) => {
-      alert(`Add to list with id: ${id}`);
-    },
-    onStatusChange: (value: any) => {
+    currentStatus: GameStatusEnum.BACKLOG,
+    onStatusChange: (value: GameStatus) => {
       alert(`Status change with value: ${value}`);
-    },
-    onCreateNewList: (name: string) => {
-      alert(`New list created: ${name}`);
     },
   },
 };

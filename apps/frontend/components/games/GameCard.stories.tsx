@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GameCard } from "./GameCard";
-import { GAME_STATUS } from "@/types";
+import { GameStatusEnum as GAME_STATUS, GameStatus } from "@playloggd/domain";
 
 const meta: Meta<typeof GameCard> = {
   title: "Components/Games/GameCard",
@@ -21,7 +21,6 @@ const meta: Meta<typeof GameCard> = {
       control: "select",
       options: Object.values(GAME_STATUS),
     },
-    lists: { control: "object" },
   },
 };
 
@@ -48,25 +47,7 @@ export const Recommended: Story = {
       "Mining",
     ],
     currentStatus: GAME_STATUS.BACKLOG,
-    lists: [
-      {
-        id: 0,
-        name: "Likes",
-        checked: false,
-        gameIds: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 1,
-        name: "Favorites",
-        checked: true,
-        gameIds: [123],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    onStatusChange: (value: any) => {
+    onStatusChange: (value: GameStatus) => {
       alert(`Status change with value: ${value}`);
     },
   },
