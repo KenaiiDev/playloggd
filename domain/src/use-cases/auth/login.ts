@@ -33,5 +33,6 @@ export async function login({ dependencies, payload }: loginParams) {
 
   return {
     ...token,
+    userId: user.id,
   };
 }
