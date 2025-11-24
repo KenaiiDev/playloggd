@@ -39,10 +39,6 @@ export class UserController {
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      if (req.user?.id !== req.params.id) {
-        next(new ValidationError("Unauthorized!"));
-      }
-
       const result = await getUsers({
         dependencies: { userService: this.userService },
         payload: { id: req.params.id },
@@ -50,7 +46,7 @@ export class UserController {
 
       if (!result) return next(new NotFoundError("User not found"));
 
-      return httpResponse.OK(res, result);
+      return httpResponse.OK(res, { ...result, passwordHash: undefined });
     } catch (error) {
       next(error);
     }
