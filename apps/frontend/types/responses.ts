@@ -20,3 +20,5 @@ export type GamesApiResponse = ApiSuccessResponse<Game[]> & {
     hasMore: boolean;
   };
 };
+
+export type GameApiResponse = ApiSuccessResponse<Game>;

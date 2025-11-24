@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
-import { GamesApiResponse } from "@/types/responses";
+import { GamesApiResponse, GameApiResponse } from "@/types/responses";
 
 interface UseGamesOptions {
   limit?: number;
@@ -32,3 +32,16 @@ export const useRecentGames = (options?: UseGamesOptions) =>
   useGames("/games/recent", options);
 export const useTopRatedGames = (options?: UseGamesOptions) =>
   useGames("/games/top", options);
+
+export function useGame(gameId: string) {
+  return useQuery({
+    queryKey: ["game", gameId],
+    queryFn: async () => {
+      const response = await apiClient.get<GameApiResponse>(
+        `/api/games/${gameId}`
+      );
+      return response.data;
+    },
+    enabled: !!gameId,
+  });
+}
