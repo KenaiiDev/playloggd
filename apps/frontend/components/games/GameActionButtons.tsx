@@ -44,14 +44,23 @@ export default function GameActionButtons({
   currentStatus,
   onStatusChange,
 }: GameActionButtonsProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <div className="flex rounded-lg w-fit mx-auto px-3 py-1.5 justify-center gap-2">
+    <div
+      className="flex rounded-lg w-fit mx-auto px-3 py-1.5 justify-center gap-2"
+      onClick={handleClick}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-white bg-white/10 hover:bg-white/20 hover:text-primary cursor-pointer"
+            onClick={handleClick}
           >
             <Gamepad2 className="h-4 w-4" />
           </Button>

@@ -49,10 +49,6 @@ export function GameCardsContainer({
     setCurrentPage(1);
   };
 
-  const handleStatusChange = (gameId: string) => (status: GameStatus) => {
-    onStatusChange?.(gameId, status);
-  };
-
   if (games.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -95,9 +91,6 @@ export function GameCardsContainer({
       {/* Games Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {currentGames.map((game) => {
-          const currentStatus =
-            getUserGameStatus?.(game.externalId) || undefined;
-
           return (
             <GameCard
               key={game.externalId}
@@ -109,8 +102,6 @@ export function GameCardsContainer({
               description={game.description || "Sin descripción disponible"}
               genres={game.genres}
               recommended={game.rating >= 80}
-              currentStatus={currentStatus}
-              onStatusChange={handleStatusChange(game.externalId)}
             />
           );
         })}

@@ -1,9 +1,14 @@
+"use client";
+
 import { Card, CardContent, CardHeader, Badge } from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import GenresContainer from "./GenresContainer";
 import GameActionButtons from "./GameActionButtons";
 import { GameStatus } from "@playloggd/domain";
+import { useGameCollectionStore } from "@/stores/game-collection-store";
+import { useAuthStore } from "@/stores/auth-store";
+import { useRouter } from "next/navigation";
 
 type GameCardProps = {
   gameId: string;
@@ -13,9 +18,8 @@ type GameCardProps = {
   imageUrl: string;
   description: string;
   genres: string[];
-  currentStatus?: GameStatus;
   recommended?: boolean;
-  onStatusChange?: (status: GameStatus) => void;
+  showActions?: boolean;
 };
 
 export function GameCard({
@@ -25,11 +29,49 @@ export function GameCard({
   imageUrl,
   description,
   genres,
-  currentStatus,
   recommended,
-
-  onStatusChange,
+  showActions = false,
 }: GameCardProps) {
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { getGameEntry, addGame, updateStatus, removeGame } =
+    useGameCollectionStore();
+
+  const currentEntry = getGameEntry(gameId);
+  const currentStatus = currentEntry?.status;
+
+  const handleStatusChange = async (status: GameStatus) => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      // Si hacen click en el mismo status que ya está seleccionado, eliminar
+      if (currentStatus === status) {
+        await removeGame(gameId);
+        return;
+      }
+
+      // Si ya existe, actualizar; si no, agregar nuevo
+      if (currentEntry) {
+        await updateStatus(gameId, status);
+      } else {
+        await addGame(gameId, status);
+      }
+    } catch (error) {
+      console.error("Failed to update game status:", error);
+    }
+  };
+
+  // Mostrar botones si showActions=true O si el usuario está autenticado
+  const shouldShowActions = showActions || isAuthenticated;
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <Link href={`/games/${gameId}`}>
       <Card className="bg-card cursor-pointer transition hover:scale-105 active:scale-100 text-card-foreground py-0 gap-0 shadow-md w-full">
@@ -41,11 +83,14 @@ export function GameCard({
               fill
               className="object-cover rounded-t-lg"
             />
-            {onStatusChange && (
-              <div className="opacity-0 absolute bg-linear-to-b from-transparent via-40% via-black/30 to-black/50 bottom-0 transition-all duration-300 group-hover:opacity-100 group-has-[button[data-state=open]]:opacity-100 w-full p-1">
+            {shouldShowActions && (
+              <div
+                className="opacity-0 absolute bg-linear-to-b from-transparent via-40% via-black/30 to-black/50 bottom-0 transition-all duration-300 group-hover:opacity-100 group-has-[button[data-state=open]]:opacity-100 w-full p-1"
+                onClick={handleOverlayClick}
+              >
                 <GameActionButtons
                   currentStatus={currentStatus}
-                  onStatusChange={onStatusChange}
+                  onStatusChange={handleStatusChange}
                 />
               </div>
             )}
