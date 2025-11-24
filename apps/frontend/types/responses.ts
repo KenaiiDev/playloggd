@@ -1,4 +1,5 @@
-import type { Game } from "@playloggd/domain";
+import type { Game, GameEntry } from "@playloggd/domain";
+import type { User } from "@playloggd/domain";
 
 export interface ApiSuccessResponse<T> {
   status: number;
@@ -22,3 +23,19 @@ export type GamesApiResponse = ApiSuccessResponse<Game[]> & {
 };
 
 export type GameApiResponse = ApiSuccessResponse<Game>;
+
+export type UserApiResponse = ApiSuccessResponse<Omit<User, "passwordHash">>;
+
+export type GameEntryApiResponse = ApiSuccessResponse<GameEntry>;
+
+export type GameEntriesApiResponse = ApiSuccessResponse<GameEntry[]>;
+
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  userId: string;
+  tokenType: string;
+  expiresIn: number;
+}
+
+export type LoginApiResponse = ApiSuccessResponse<TokenResponse>;
