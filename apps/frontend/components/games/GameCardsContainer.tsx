@@ -101,6 +101,7 @@ export function GameCardsContainer({
           return (
             <GameCard
               key={game.externalId}
+              gameId={game.externalId}
               title={game.title}
               genre={game.genres[0] || ""}
               rating={game.rating / 10} // Convert from 0-100 to 0-10
