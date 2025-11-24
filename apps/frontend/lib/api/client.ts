@@ -177,6 +177,7 @@ class ApiClient {
   }
 
   get<T>(endpoint: string, options?: RequestOptions) {
+    console.log({ endpoint, options });
     return this.request<T>(endpoint, { ...options, method: "GET" });
   }
 

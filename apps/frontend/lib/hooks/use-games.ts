@@ -1,17 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../api/client";
-import type { Game } from "@playloggd/domain";
+import { GamesApiResponse } from "@/types/responses";
 
-export function useGames(endpoint: string) {
+interface UseGamesOptions {
+  limit?: number;
+  offset?: number;
+  enabled?: boolean;
+}
+
+export function useGames(endpoint: string, options: UseGamesOptions = {}) {
+  const { limit = 12, offset = 0, enabled = true } = options;
+
   return useQuery({
-    queryKey: ["games", endpoint],
-    queryFn: () => apiClient.get<Game[]>(`/api${endpoint}`),
+    queryKey: ["games", endpoint, limit, offset],
+    queryFn: async () => {
+      const response = await apiClient.get<GamesApiResponse>(
+        `/api${endpoint}?limit=${limit}&offset=${offset}`
+      );
+      return {
+        games: response.data,
+        pagination: response.pagination,
+      };
+    },
+    enabled,
   });
 }
 
-export const usePopularGames = (limit: number = 0, offset: number = 0) =>
-  useGames(`/games/popular?limit=${limit}&offset=${offset}`);
-export const useRecentGames = (limit: number, offset: number) =>
-  useGames(`/games/recent?limit=${limit}&offset=${offset}`);
-export const useTopRatedGames = (limit: number, offset: number) =>
-  useGames(`/games/top?limit=${limit}&offset=${offset}`);
+export const usePopularGames = (options?: UseGamesOptions) =>
+  useGames("/games/popular", options);
+export const useRecentGames = (options?: UseGamesOptions) =>
+  useGames("/games/recent", options);
+export const useTopRatedGames = (options?: UseGamesOptions) =>
+  useGames("/games/top", options);
