@@ -1,65 +1,207 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { GameCard } from "@/components/games";
+import {
+  usePopularGames,
+  useRecentGames,
+  useTopRatedGames,
+} from "@/lib/hooks/use-games";
+import {
+  Alert,
+  AlertDescription,
+  Skeleton,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@/components/ui";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+type GameCategory = "popular" | "top" | "recent";
+
+const ITEMS_PER_PAGE_OPTIONS = [12, 24, 36, 48] as const;
 
 export default function Home() {
+  const [category, setCategory] = useState<GameCategory>("popular");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+
+  const offset = (currentPage - 1) * itemsPerPage;
+
+  const popularQuery = usePopularGames({
+    limit: itemsPerPage,
+    offset,
+    enabled: category === "popular",
+  });
+
+  const topQuery = useTopRatedGames({
+    limit: itemsPerPage,
+    offset,
+    enabled: category === "top",
+  });
+
+  const recentQuery = useRecentGames({
+    limit: itemsPerPage,
+    offset,
+    enabled: category === "recent",
+  });
+
+  // Seleccionar la query activa según la categoría
+  const activeQuery =
+    category === "popular"
+      ? popularQuery
+      : category === "top"
+      ? topQuery
+      : recentQuery;
+
+  const { data, isLoading, error } = activeQuery;
+
+  const handleCategoryChange = (value: GameCategory) => {
+    setCategory(value);
+    setCurrentPage(1);
+  };
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const categoryLabels: Record<GameCategory, string> = {
+    popular: "Popular Games",
+    top: "Top Rated",
+    recent: "Recent Releases",
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-4">{categoryLabels[category]}</h1>
+
+        {/* Category Selector */}
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium">Category:</span>
+            <Select value={category} onValueChange={handleCategoryChange}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="popular">Popular</SelectItem>
+                <SelectItem value="top">Top Rated</SelectItem>
+                <SelectItem value="recent">Recent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium">Items per page:</span>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={handleItemsPerPageChange}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <SelectTrigger className="w-[100px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ITEMS_PER_PAGE_OPTIONS.map((option) => (
+                  <SelectItem key={option} value={option.toString()}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {Array.from({ length: itemsPerPage }).map((_, i) => (
+            <Card key={i} className="w-full p-0">
+              <CardHeader className="p-0">
+                <Skeleton className="aspect-3/4 w-full rounded-t-lg" />
+              </CardHeader>
+              <CardContent className="p-4 space-y-2">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-2/3" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </main>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            Error loading games. Please try again.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Games Grid */}
+      {!isLoading && !error && data && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {data.games.map((game) => (
+              <GameCard
+                key={game.externalId}
+                title={game.title}
+                genre={game.genres[0] || ""}
+                rating={game.rating / 10} // Convertir de 0-100 a 0-10
+                imageUrl={game.coverUrl || "/placeholder-game.jpg"}
+                description={game.description || ""}
+                genres={game.genres}
+              />
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {(currentPage > 1 || data.pagination.hasMore) && (
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+
+              <span className="text-sm font-medium">Page {currentPage}</span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={!data.pagination.hasMore}
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function GameCard({
   onStatusChange,
 }: GameCardProps) {
   return (
-    <Card className="bg-card text-card-foreground py-0 gap-0 shadow-md w-full">
+    <Card className="bg-card cursor-pointer transition hover:scale-105 active:scale-100 text-card-foreground py-0 gap-0 shadow-md w-full">
       <CardHeader className="p-0">
         <div className="relative group overflow-hidden aspect-3/4">
           <Image
@@ -37,12 +37,14 @@ export function GameCard({
             fill
             className="object-cover rounded-t-lg"
           />
-          <div className="opacity-0 absolute bg-linear-to-b from-transparent via-40% via-black/30 to-black/50 bottom-0 transition-all duration-300 group-hover:opacity-100 group-has-[button[data-state=open]]:opacity-100 w-full p-1">
-            <GameActionButtons
-              currentStatus={currentStatus}
-              onStatusChange={onStatusChange}
-            />
-          </div>
+          {onStatusChange && (
+            <div className="opacity-0 absolute bg-linear-to-b from-transparent via-40% via-black/30 to-black/50 bottom-0 transition-all duration-300 group-hover:opacity-100 group-has-[button[data-state=open]]:opacity-100 w-full p-1">
+              <GameActionButtons
+                currentStatus={currentStatus}
+                onStatusChange={onStatusChange}
+              />
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="p-4 space-y-2">
