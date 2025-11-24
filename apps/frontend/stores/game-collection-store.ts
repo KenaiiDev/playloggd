@@ -31,7 +31,7 @@ export const useGameCollectionStore = create<GameCollectionState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await apiClient.get<GameEntriesApiResponse>(
-            `/game-entries/${userId}`
+            `/api/game-entries/${userId}`
           );
 
           const entriesMap = new Map<string, GameEntry>();
@@ -55,8 +55,9 @@ export const useGameCollectionStore = create<GameCollectionState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await apiClient.post<GameEntryApiResponse>(
-            "/game-entry",
-            { gameExternalId, status }
+            "/api/game-entry",
+            { gameExternalId, status },
+            { requiresAuth: true }
           );
 
           const newEntry = response.data;
@@ -78,8 +79,9 @@ export const useGameCollectionStore = create<GameCollectionState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await apiClient.put<GameEntryApiResponse>(
-            `/game-entry/update/${gameExternalId}`,
-            { status }
+            `/api/game-entry/update/${gameExternalId}`,
+            { status },
+            { requiresAuth: true }
           );
 
           const updatedEntry = response.data;
@@ -102,7 +104,9 @@ export const useGameCollectionStore = create<GameCollectionState>()(
       removeGame: async (gameExternalId: string) => {
         set({ isLoading: true, error: null });
         try {
-          await apiClient.delete(`/game-entry/delete/${gameExternalId}`);
+          await apiClient.delete(`/api/game-entry/delete/${gameExternalId}`, {
+            requiresAuth: true,
+          });
 
           const entries = new Map(get().entries);
           entries.delete(gameExternalId);

@@ -27,10 +27,13 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       login: async (email, password) => {
-        const response = await apiClient.post<LoginApiResponse>("/auth/login", {
-          email,
-          password,
-        });
+        const response = await apiClient.post<LoginApiResponse>(
+          "/api/auth/login",
+          {
+            email,
+            password,
+          }
+        );
 
         const { accessToken, refreshToken, userId } = response.data;
 
@@ -39,11 +42,16 @@ export const useAuthStore = create<AuthState>()(
         localStorage.setItem("refreshToken", refreshToken);
 
         await get().fetchUser(userId);
+
+        const { useGameCollectionStore } = await import(
+          "./game-collection-store"
+        );
+        await useGameCollectionStore.getState().fetchUserEntries(userId);
       },
 
       fetchUser: async (userId: string) => {
         const response = await apiClient.get<UserApiResponse>(
-          `/users/${userId}`
+          `/api/users/${userId}`
         );
         const user = response.data;
 
@@ -68,6 +76,11 @@ export const useAuthStore = create<AuthState>()(
         });
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+
+        // Limpiar colección al hacer logout
+        import("./game-collection-store").then(({ useGameCollectionStore }) => {
+          useGameCollectionStore.getState().clearCollection();
+        });
       },
     }),
     {

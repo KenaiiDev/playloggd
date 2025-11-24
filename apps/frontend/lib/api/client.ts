@@ -36,24 +36,24 @@ class ApiClient {
 
   private getAuthToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem("access_token");
+    return localStorage.getItem("accessToken");
   }
 
   private getRefreshToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem("refresh_token");
+    return localStorage.getItem("refreshToken");
   }
 
   private setTokens(accessToken: string, refreshToken: string): void {
     if (typeof window === "undefined") return;
-    localStorage.setItem("access_token", accessToken);
-    localStorage.setItem("refresh_token", refreshToken);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
   }
 
   private clearTokens(): void {
     if (typeof window === "undefined") return;
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
   }
 
   private async refreshAccessToken(): Promise<string> {
@@ -177,11 +177,12 @@ class ApiClient {
   }
 
   get<T>(endpoint: string, options?: RequestOptions) {
-    console.log({ endpoint, options });
     return this.request<T>(endpoint, { ...options, method: "GET" });
   }
 
   post<T>(endpoint: string, body?: unknown, options?: RequestOptions) {
+    console.log("POST");
+    console.log({ endpoint, body, options });
     return this.request<T>(endpoint, {
       ...options,
       method: "POST",
