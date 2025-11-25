@@ -32,6 +32,8 @@ export const useRecentGames = (options?: UseGamesOptions) =>
   useGames("/games/recent", options);
 export const useTopRatedGames = (options?: UseGamesOptions) =>
   useGames("/games/top", options);
+export const useUpcomingGames = (options?: UseGamesOptions) =>
+  useGames("/games/upcoming", options);
 
 export function useSearchGames(query: string, options?: UseGamesOptions) {
   const { limit = 12, offset = 0, enabled = true } = options || {};

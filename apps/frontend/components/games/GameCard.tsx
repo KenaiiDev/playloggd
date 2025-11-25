@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import GenresContainer from "./GenresContainer";
 import GameActionButtons from "./GameActionButtons";
-import { GameStatus } from "@playloggd/domain";
+import { GameStatus, GameStatusEnum } from "@playloggd/domain";
 import { useGameCollectionStore } from "@/stores/game-collection-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type GameCardProps = {
   gameId: string;
@@ -40,6 +41,19 @@ export function GameCard({
   const currentEntry = getGameEntry(gameId);
   const currentStatus = currentEntry?.status;
 
+  const STATUS_LABELS: Record<string, string> = {
+    [GameStatusEnum.WISHLIST]: "Want to Play",
+    [GameStatusEnum.BACKLOG]: "Backlog",
+    [GameStatusEnum.PLAYING]: "Currently Playing",
+    [GameStatusEnum.ON_HOLD]: "On Hold",
+    [GameStatusEnum.COMPLETED]: "Completed",
+    [GameStatusEnum.FULLY_COMPLETED]: "100% Completed",
+    [GameStatusEnum.DROPPED]: "Dropped",
+    [GameStatusEnum.NOT_FOR_ME]: "Not for Me",
+    [GameStatusEnum.REPLAY]: "Replaying",
+    [GameStatusEnum.REVIEWING]: "Reviewing",
+  };
+
   const handleStatusChange = async (status: GameStatus) => {
     if (!isAuthenticated) {
       router.push("/login");
@@ -49,16 +63,20 @@ export function GameCard({
     try {
       if (currentStatus === status) {
         await removeGame(gameId);
+        toast.success(`${title} removed from collection`);
         return;
       }
 
       if (currentEntry) {
         await updateStatus(gameId, status);
+        toast.success(`${title} updated to ${STATUS_LABELS[status]}`);
       } else {
         await addGame(gameId, status);
+        toast.success(`${title} added to ${STATUS_LABELS[status]}`);
       }
     } catch (error) {
       console.error("Failed to update game status:", error);
+      toast.error("Failed to update game status. Please try again.");
     }
   };
   const shouldShowActions = showActions || isAuthenticated;

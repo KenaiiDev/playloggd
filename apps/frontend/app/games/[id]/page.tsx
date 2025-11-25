@@ -23,6 +23,7 @@ import {
 import { ArrowLeft, Calendar, Star, Plus } from "lucide-react";
 import Image from "next/image";
 import { GameStatusEnum, type GameStatus } from "@playloggd/domain";
+import { toast } from "sonner";
 
 export default function GameDetailsPage() {
   const params = useParams();
@@ -45,6 +46,7 @@ export default function GameDetailsPage() {
     try {
       if (currentStatus === status) {
         await removeGame(gameId);
+        toast.success("Game removed from collection");
         return;
       }
 
@@ -52,11 +54,14 @@ export default function GameDetailsPage() {
 
       if (existingEntry) {
         await updateStatus(gameId, status);
+        toast.success(`Status updated to ${STATUS_LABELS[status]}`);
       } else {
         await addGame(gameId, status);
+        toast.success(`Added to ${STATUS_LABELS[status]}`);
       }
     } catch (error) {
       console.error("Failed to update game status:", error);
+      toast.error("Failed to update game status. Please try again.");
     }
   };
 

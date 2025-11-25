@@ -6,6 +6,7 @@ import {
   usePopularGames,
   useRecentGames,
   useTopRatedGames,
+  useUpcomingGames,
 } from "@/lib/hooks/use-games";
 import {
   Alert,
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-type GameCategory = "popular" | "top" | "recent";
+type GameCategory = "popular" | "top" | "recent" | "upcoming";
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 36, 48] as const;
 
@@ -52,11 +53,19 @@ export default function Home() {
     enabled: category === "recent",
   });
 
+  const upcomingQuery = useUpcomingGames({
+    limit: itemsPerPage,
+    offset,
+    enabled: category === "upcoming",
+  });
+
   const activeQuery =
     category === "popular"
       ? popularQuery
       : category === "top"
       ? topQuery
+      : category === "upcoming"
+      ? upcomingQuery
       : recentQuery;
 
   const { data, isLoading, error } = activeQuery;
@@ -80,6 +89,7 @@ export default function Home() {
     popular: "Popular Games",
     top: "Top Rated",
     recent: "Recent Releases",
+    upcoming: "Upcoming Games",
   };
 
   return (
@@ -100,6 +110,7 @@ export default function Home() {
                 <SelectItem value="popular">Popular</SelectItem>
                 <SelectItem value="top">Top Rated</SelectItem>
                 <SelectItem value="recent">Recent</SelectItem>
+                <SelectItem value="upcoming">Upcoming</SelectItem>
               </SelectContent>
             </Select>
           </div>
