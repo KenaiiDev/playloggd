@@ -11,16 +11,21 @@ import {
   Badge,
   Button,
 } from "@/components/ui";
-import { User, Mail, Calendar, Gamepad2, Edit } from "lucide-react";
+import { User, Mail, Calendar, Gamepad2, Edit, KeyRound } from "lucide-react";
 import { GameStatusEnum } from "@playloggd/domain";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { EditProfileDialog } from "@/components/profile/EditProfileDialog";
+import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 
 export default function ProfilePage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const entries = useGameCollectionStore((state) => state.entries);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] =
+    useState(false);
 
   const stats = useMemo(() => {
     const entriesArray = Array.from(entries.values());
@@ -96,10 +101,24 @@ export default function ProfilePage() {
                   <p className="text-sm text-muted-foreground">{user.bio}</p>
                 </div>
               )}
-              <Button variant="outline" className="w-full gap-2">
-                <Edit className="h-4 w-4" />
-                Edit Profile
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => setIsEditDialogOpen(true)}
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit Profile
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => setIsChangePasswordDialogOpen(true)}
+                >
+                  <KeyRound className="h-4 w-4" />
+                  Change Password
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -218,6 +237,15 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      <EditProfileDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+      />
+      <ChangePasswordDialog
+        open={isChangePasswordDialogOpen}
+        onOpenChange={setIsChangePasswordDialogOpen}
+      />
     </div>
   );
 }

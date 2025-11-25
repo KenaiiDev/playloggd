@@ -4,7 +4,10 @@ import { User } from "@playloggd/domain";
 import { apiClient } from "@/lib/api/client";
 import { LoginApiResponse, UserApiResponse } from "@/types/responses";
 
-type UserStore = Omit<User, "passwordHash" | "createdAt" | "updatedAt"> & {
+export type UserStore = Omit<
+  User,
+  "passwordHash" | "createdAt" | "updatedAt"
+> & {
   createdAt: string;
   updatedAt: string;
 };
