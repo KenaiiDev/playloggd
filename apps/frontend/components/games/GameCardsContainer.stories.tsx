@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GameCardsContainer } from "./GameCardsContainer";
-import { GameStatusEnum as GAME_STATUS, Game } from "@playloggd/domain";
+import { Game } from "@playloggd/domain";
 
 const meta: Meta<typeof GameCardsContainer> = {
   title: "Components/Games/GameCardsContainer",
@@ -8,11 +8,12 @@ const meta: Meta<typeof GameCardsContainer> = {
   tags: ["autodocs"],
   parameters: {
     layout: "padded",
+    nextjs: {
+      appDirectory: true,
+    },
   },
   argTypes: {
     games: { control: "object" },
-    onStatusChange: { action: "status changed" },
-    getUserGameStatus: { action: "get user game status" },
   },
 };
 
@@ -272,52 +273,23 @@ const largeGameList: Game[] = Array.from({ length: 50 }, (_, index) => ({
 export const Default: Story = {
   args: {
     games: mockGames,
-    onStatusChange: (gameId: string, status: string) => {
-      console.log(`Game ${gameId} status changed to ${status}`);
-    },
-    getUserGameStatus: (gameId: string) => {
-      const statuses: Record<
-        string,
-        (typeof GAME_STATUS)[keyof typeof GAME_STATUS]
-      > = {
-        "1": GAME_STATUS.PLAYING,
-        "2": GAME_STATUS.COMPLETED,
-        "3": GAME_STATUS.WISHLIST,
-      };
-      return statuses[gameId];
-    },
   },
 };
 
 export const WithManyGames: Story = {
   args: {
     games: largeGameList,
-    onStatusChange: (gameId: string, status: string) => {
-      console.log(`Game ${gameId} status changed to ${status}`);
-    },
-    getUserGameStatus: (gameId: string) => {
-      const num = parseInt(gameId);
-      if (num % 3 === 0) return GAME_STATUS.COMPLETED;
-      if (num % 5 === 0) return GAME_STATUS.PLAYING;
-      if (num % 7 === 0) return GAME_STATUS.WISHLIST;
-    },
   },
 };
 
 export const Empty: Story = {
   args: {
     games: [],
-    onStatusChange: (gameId: string, status: string) => {
-      console.log(`Game ${gameId} status changed to ${status}`);
-    },
   },
 };
 
 export const FewGames: Story = {
   args: {
     games: mockGames.slice(0, 3),
-    onStatusChange: (gameId: string, status: string) => {
-      console.log(`Game ${gameId} status changed to ${status}`);
-    },
   },
 };

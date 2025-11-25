@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GameCard } from "./GameCard";
-import { GameStatusEnum as GAME_STATUS, GameStatus } from "@playloggd/domain";
 
 const meta: Meta<typeof GameCard> = {
   title: "Components/Games/GameCard",
@@ -8,8 +7,12 @@ const meta: Meta<typeof GameCard> = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
+    nextjs: {
+      appDirectory: true,
+    },
   },
   argTypes: {
+    gameId: { control: "text" },
     title: { control: "text" },
     genre: { control: "text" },
     rating: { control: "number" },
@@ -17,10 +20,7 @@ const meta: Meta<typeof GameCard> = {
     description: { control: "text" },
     recommended: { control: "boolean" },
     genres: { control: "object" },
-    currentStatus: {
-      control: "select",
-      options: Object.values(GAME_STATUS),
-    },
+    showActions: { control: "boolean" },
   },
 };
 
@@ -29,6 +29,7 @@ type Story = StoryObj<typeof GameCard>;
 
 export const Recommended: Story = {
   args: {
+    gameId: "1",
     title: "Stardew Valley",
     genre: "Simulation",
     rating: 9.1,
@@ -46,20 +47,46 @@ export const Recommended: Story = {
       "Adventure",
       "Mining",
     ],
-    currentStatus: GAME_STATUS.BACKLOG,
-    onStatusChange: (value: GameStatus) => {
-      alert(`Status change with value: ${value}`);
-    },
+    showActions: false,
   },
 };
 
 export const NotRecommended: Story = {
   args: {
-    ...Recommended.args,
+    gameId: "2",
     title: "Farming Simulator 2020",
+    genre: "Simulation",
     rating: 4.8,
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/en/f/fd/Logo_of_Stardew_Valley.png",
     description:
       "An attempt at realism that falls short due to repetitive gameplay and lack of innovation.",
     recommended: false,
+    genres: [
+      "Farm life sim",
+      "Indie",
+      "Adventure",
+      "Farm",
+      "Cozy",
+      "Adventure",
+      "Mining",
+    ],
+    showActions: false,
+  },
+};
+
+export const WithActions: Story = {
+  args: {
+    gameId: "3",
+    title: "The Legend of Zelda: Breath of the Wild",
+    genre: "Action-Adventure",
+    rating: 9.7,
+    imageUrl:
+      "https://images.igdb.com/igdb/image/upload/t_cover_big/co3p2d.jpg",
+    description:
+      "Step into a world of discovery, exploration, and adventure in The Legend of Zelda: Breath of the Wild.",
+    recommended: true,
+    genres: ["Action", "Adventure", "RPG"],
+    showActions: true,
   },
 };
