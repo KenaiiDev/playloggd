@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: playloggd-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - playloggd-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: playloggd-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+      - apps/backend/.env
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    volumes:
+      - ./apps/backend:/app/apps/backend
+      - ./domain:/app/domain
+      - /app/node_modules
+      - /app/apps/backend/node_modules
+    networks:
+      - playloggd-network
+    command: sh -c "pnpm prisma migrate deploy && pnpm --filter backend start"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    container_name: playloggd-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    env_file:
+      - .env
+      - apps/frontend/.env
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./apps/frontend:/app/apps/frontend
+      - ./domain:/app/domain
+      - /app/node_modules
+      - /app/apps/frontend/node_modules
+      - /app/apps/frontend/.next
+    networks:
+      - playloggd-network
+
+networks:
+  playloggd-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
