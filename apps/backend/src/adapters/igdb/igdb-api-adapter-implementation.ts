@@ -67,12 +67,19 @@ export class IGDBApiAdapterImplementation implements IGDBApiAdapter {
     const limit = pagination?.limit ?? 10;
     const offset = pagination?.offset ?? 0;
 
+    const words = query
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+
+    const whereConditions = words.map((word) => `name ~ *"${word}"*`);
+
     const response = await this.client.post<IGDBGameResponse[]>(
       "games",
       IGDBApiClient.buildQuery({
         fields: this.DEFAULT_FIELDS,
-        where: [`name ~ *"${query}"*`],
-        sort: "id asc",
+        where: whereConditions,
+        sort: "rating desc",
         limit,
         offset,
       })
