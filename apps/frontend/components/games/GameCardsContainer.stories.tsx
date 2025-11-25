@@ -20,7 +20,6 @@ const meta: Meta<typeof GameCardsContainer> = {
 export default meta;
 type Story = StoryObj<typeof GameCardsContainer>;
 
-// Mock games data
 const mockGames: Game[] = [
   {
     externalId: "1",

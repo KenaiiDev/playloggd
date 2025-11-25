@@ -1,10 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
   "references": [{ "path": "../../domain" }],
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
@@ -15,11 +14,11 @@
     "resolveJsonModule": true,
     "composite": true,
     "typeRoots": ["./src/types"],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@domain/*": ["../../domain/src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/__mocks__", "**/*.test.ts", "dist"]
 }
