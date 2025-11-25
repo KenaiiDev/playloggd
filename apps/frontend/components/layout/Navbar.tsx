@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui";
-import { LogOut, User, Gamepad2 } from "lucide-react";
+import { LogOut, User, Gamepad2, Search } from "lucide-react";
 
 export function Navbar() {
   const router = useRouter();
@@ -33,6 +33,13 @@ export function Navbar() {
                 className="text-sm font-medium hover:text-primary transition-colors"
               >
                 Games
+              </Link>
+              <Link
+                href="/search"
+                className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <Search className="h-4 w-4" />
+                Search
               </Link>
               <Link
                 href="/collection"
@@ -68,6 +75,13 @@ export function Navbar() {
                 className="text-sm font-medium hover:text-primary transition-colors"
               >
                 Games
+              </Link>
+              <Link
+                href="/search"
+                className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <Search className="h-4 w-4" />
+                Search
               </Link>
               <Button asChild variant="default" size="sm">
                 <Link href="/login">Sign In</Link>

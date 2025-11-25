@@ -33,6 +33,26 @@ export const useRecentGames = (options?: UseGamesOptions) =>
 export const useTopRatedGames = (options?: UseGamesOptions) =>
   useGames("/games/top", options);
 
+export function useSearchGames(query: string, options?: UseGamesOptions) {
+  const { limit = 12, offset = 0, enabled = true } = options || {};
+
+  return useQuery({
+    queryKey: ["games", "search", query, limit, offset],
+    queryFn: async () => {
+      const response = await apiClient.get<GamesApiResponse>(
+        `/api/games/search?q=${encodeURIComponent(
+          query
+        )}&limit=${limit}&offset=${offset}`
+      );
+      return {
+        games: response.data,
+        pagination: response.pagination,
+      };
+    },
+    enabled: enabled && query.length >= 2,
+  });
+}
+
 export function useGame(gameId: string) {
   return useQuery({
     queryKey: ["game", gameId],
