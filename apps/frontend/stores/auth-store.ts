@@ -4,7 +4,10 @@ import { User } from "@playloggd/domain";
 import { apiClient } from "@/lib/api/client";
 import { LoginApiResponse, UserApiResponse } from "@/types/responses";
 
-type UserStore = Omit<User, "passwordHash">;
+type UserStore = Omit<User, "passwordHash" | "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
 
 interface AuthState {
   user: UserStore | null;
@@ -77,7 +80,6 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
 
-        // Limpiar colección al hacer logout
         import("./game-collection-store").then(({ useGameCollectionStore }) => {
           useGameCollectionStore.getState().clearCollection();
         });

@@ -24,7 +24,15 @@ export type GamesApiResponse = ApiSuccessResponse<Game[]> & {
 
 export type GameApiResponse = ApiSuccessResponse<Game>;
 
-export type UserApiResponse = ApiSuccessResponse<Omit<User, "passwordHash">>;
+export type UserResponse = Omit<
+  User,
+  "passwordHash" | "createdAt" | "updatedAt"
+> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserApiResponse = ApiSuccessResponse<UserResponse>;
 
 export type GameEntryApiResponse = ApiSuccessResponse<GameEntry>;
 
