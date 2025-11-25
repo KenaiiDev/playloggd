@@ -52,7 +52,6 @@ export default function Home() {
     enabled: category === "recent",
   });
 
-  // Seleccionar la query activa según la categoría
   const activeQuery =
     category === "popular"
       ? popularQuery
