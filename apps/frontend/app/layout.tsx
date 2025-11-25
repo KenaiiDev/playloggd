@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Playloggd - Track Your Gaming Journey",
-  description: "Your personal game collection manager. Track, organize, and discover your gaming adventures.",
+  description:
+    "Your personal game collection manager. Track, organize, and discover your gaming adventures.",
 };
 
 export default function RootLayout({
