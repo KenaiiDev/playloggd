@@ -87,12 +87,18 @@ describe("GameController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
-      const searchResults = [mockGame];
+      const searchResults = {
+        data: [mockGame],
+        pagination: { total: 1, limit: 10, offset: 0, hasMore: false },
+      };
       gameServiceMock.searchGames.mockResolvedValue(searchResults);
 
       await gameController.searchGames(req, res, next);
 
-      expect(gameServiceMock.searchGames).toHaveBeenCalledWith(query);
+      expect(gameServiceMock.searchGames).toHaveBeenCalledWith(query, {
+        limit: NaN,
+        offset: NaN,
+      });
     });
 
     it("should validate search query length", async () => {
@@ -140,12 +146,18 @@ describe("GameController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
-      const popularGames = [mockGame];
+      const popularGames = {
+        data: [mockGame],
+        pagination: { total: 1, limit: 10, offset: 0, hasMore: false },
+      };
       gameServiceMock.getMostPopularGames.mockResolvedValue(popularGames);
 
       await gameController.getMostPopularGames(req, res, next);
 
-      expect(gameServiceMock.getMostPopularGames).toHaveBeenCalledWith(10);
+      expect(gameServiceMock.getMostPopularGames).toHaveBeenCalledWith({
+        limit: 10,
+        offset: NaN,
+      });
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });
@@ -162,12 +174,18 @@ describe("GameController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
-      const topRatedGames = [mockGame];
+      const topRatedGames = {
+        data: [mockGame],
+        pagination: { total: 1, limit: 10, offset: 0, hasMore: false },
+      };
       gameServiceMock.getTopRatedGames.mockResolvedValue(topRatedGames);
 
       await gameController.getTopRatedGames(req, res, next);
 
-      expect(gameServiceMock.getTopRatedGames).toHaveBeenCalledWith(10);
+      expect(gameServiceMock.getTopRatedGames).toHaveBeenCalledWith({
+        limit: 10,
+        offset: NaN,
+      });
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });
@@ -184,12 +202,18 @@ describe("GameController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
-      const upcomingGames = [mockGame];
+      const upcomingGames = {
+        data: [mockGame],
+        pagination: { total: 1, limit: 10, offset: 0, hasMore: false },
+      };
       gameServiceMock.getUpcomingGames.mockResolvedValue(upcomingGames);
 
       await gameController.getUpcomingGames(req, res, next);
 
-      expect(gameServiceMock.getUpcomingGames).toHaveBeenCalledWith(10);
+      expect(gameServiceMock.getUpcomingGames).toHaveBeenCalledWith({
+        limit: 10,
+        offset: NaN,
+      });
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });
@@ -206,19 +230,25 @@ describe("GameController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
-      const recentGames = [mockGame];
+      const recentGames = {
+        data: [mockGame],
+        pagination: { total: 1, limit: 10, offset: 0, hasMore: false },
+      };
       gameServiceMock.getRecentReleaseGames.mockResolvedValue(recentGames);
 
       await gameController.getRecentReleaseGames(req, res, next);
 
-      expect(gameServiceMock.getRecentReleaseGames).toHaveBeenCalledWith(10);
+      expect(gameServiceMock.getRecentReleaseGames).toHaveBeenCalledWith({
+        limit: 10,
+        offset: NaN,
+      });
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });
 
   describe("getByFilter", () => {
     it("should return filtered games", async () => {
-      const filter = { genres: ["Action"], platforms: ["PS5"], limit: "10" };
+      const filter = { genres: ["Action"], platforms: ["PS5"] };
       const req = createRequest({
         method: "GET",
         url: "/games/filter",
@@ -233,12 +263,18 @@ describe("GameController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
-      const filteredGames = [mockGame];
+      const filteredGames = {
+        data: [mockGame],
+        pagination: { total: 1, limit: 10, offset: 0, hasMore: false },
+      };
       gameServiceMock.getByFilter.mockResolvedValue(filteredGames);
 
       await gameController.getByFilter(req, res, next);
 
-      expect(gameServiceMock.getByFilter).toHaveBeenCalledWith(filter);
+      expect(gameServiceMock.getByFilter).toHaveBeenCalledWith(filter, {
+        limit: 10,
+        offset: NaN,
+      });
       expect(res.status).toHaveBeenCalledWith(200);
     });
   });

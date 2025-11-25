@@ -17,8 +17,9 @@ describe("Login", () => {
     mockReset(userService);
   });
 
-  it("Should return token when valid credentials are provided", async () => {
+  it("Should return token and userId when valid credentials are provided", async () => {
     const mockUser = createMockUser({
+      id: "user-1",
       email: "test@example.com",
       passwordHash: "$2b$10$hashedpassword",
     });
@@ -43,6 +44,7 @@ describe("Login", () => {
     });
 
     expect(result).toEqual({
+      userId: "user-1",
       accessToken: "access-token",
       refreshToken: "refresh-token",
       expiresIn: 86400,
@@ -81,6 +83,8 @@ describe("Login", () => {
   });
 
   it("Should throw error if user is not found", async () => {
+    userService.getByEmail.mockResolvedValue(undefined);
+
     await expect(
       login({
         dependencies: { userService, authService },
@@ -98,25 +102,17 @@ describe("Login", () => {
       passwordHash: "$2b$10$hashedpassword",
     });
 
-    const mockTokens = {
-      accessToken: "access-token",
-      refreshToken: "refresh-token",
-      tokenType: "Bearer",
-      expiresIn: 86400,
-    };
-
     userService.getByEmail.mockResolvedValue(mockUser);
     authService.verifyPassword.mockResolvedValue(false);
-    authService.generateToken.mockResolvedValue(mockTokens);
 
     await expect(
       login({
         dependencies: { userService, authService },
         payload: {
           email: "test@example.com",
-          password: "password123",
+          password: "wrongpassword",
         },
       })
-    ).rejects.toThrow();
+    ).rejects.toThrow("Invalid password");
   });
 });

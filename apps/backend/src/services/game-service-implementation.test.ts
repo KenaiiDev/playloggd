@@ -61,23 +61,41 @@ describe("GameServiceImplementation", () => {
   describe("searchGames", () => {
     it("should return games matching the search query", async () => {
       const query = "Last of Us";
-      igdbAdapter.searchGames.mockResolvedValue([mockGames[0]]);
+      const mockResponse = {
+        data: [mockGames[0]],
+        pagination: {
+          total: 1,
+          limit: 10,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.searchGames.mockResolvedValue(mockResponse);
 
       const result = await gameService.searchGames(query);
 
-      expect(result).toHaveLength(1);
-      expect(result[0].title).toBe("The Last of Us Part I");
-      expect(igdbAdapter.searchGames).toHaveBeenCalledWith(query);
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].title).toBe("The Last of Us Part I");
+      expect(igdbAdapter.searchGames).toHaveBeenCalledWith(query, undefined);
     });
 
     it("should return empty array when no games match the query", async () => {
       const query = "Nonexistent Game";
-      igdbAdapter.searchGames.mockResolvedValue([]);
+      const mockResponse = {
+        data: [],
+        pagination: {
+          total: 0,
+          limit: 10,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.searchGames.mockResolvedValue(mockResponse);
 
       const result = await gameService.searchGames(query);
 
-      expect(result).toHaveLength(0);
-      expect(igdbAdapter.searchGames).toHaveBeenCalledWith(query);
+      expect(result.data).toHaveLength(0);
+      expect(igdbAdapter.searchGames).toHaveBeenCalledWith(query, undefined);
     });
   });
 
@@ -111,53 +129,95 @@ describe("GameServiceImplementation", () => {
         platforms: ["PS5", "PC"],
         minRating: 90,
       };
-      igdbAdapter.getGamesByFilter.mockResolvedValue(mockGames);
+      const mockResponse = {
+        data: mockGames,
+        pagination: {
+          total: 3,
+          limit: 10,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getGamesByFilter.mockResolvedValue(mockResponse);
 
       const result = await gameService.getByFilter(filter);
 
-      expect(result).toHaveLength(3);
-      expect(igdbAdapter.getGamesByFilter).toHaveBeenCalledWith(filter);
+      expect(result.data).toHaveLength(3);
+      expect(igdbAdapter.getGamesByFilter).toHaveBeenCalledWith(
+        filter,
+        undefined
+      );
     });
 
     it("should return empty array when no games match the filter", async () => {
       const filter = { minRating: 99 };
-      igdbAdapter.getGamesByFilter.mockResolvedValue([]);
+      const mockResponse = {
+        data: [],
+        pagination: {
+          total: 0,
+          limit: 10,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getGamesByFilter.mockResolvedValue(mockResponse);
 
       const result = await gameService.getByFilter(filter);
 
-      expect(result).toHaveLength(0);
-      expect(igdbAdapter.getGamesByFilter).toHaveBeenCalledWith(filter);
+      expect(result.data).toHaveLength(0);
+      expect(igdbAdapter.getGamesByFilter).toHaveBeenCalledWith(
+        filter,
+        undefined
+      );
     });
   });
 
   describe("getMostPopularGames", () => {
     it("should return most popular games up to the specified limit", async () => {
-      const limit = 2;
+      const pagination = { limit: 2, offset: 0 };
       const expectedGames = mockGames.slice(0, 2);
-      igdbAdapter.getMostPopularGames.mockResolvedValue(expectedGames);
+      const mockResponse = {
+        data: expectedGames,
+        pagination: {
+          total: 2,
+          limit: 2,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getMostPopularGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getMostPopularGames(limit);
+      const result = await gameService.getMostPopularGames(pagination);
 
-      expect(result).toEqual(expectedGames);
-      expect(igdbAdapter.getMostPopularGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual(expectedGames);
+      expect(igdbAdapter.getMostPopularGames).toHaveBeenCalledWith(pagination);
     });
 
     it("should return empty array when no games are found", async () => {
-      const limit = 5;
-      igdbAdapter.getMostPopularGames.mockResolvedValue([]);
+      const pagination = { limit: 5, offset: 0 };
+      const mockResponse = {
+        data: [],
+        pagination: {
+          total: 0,
+          limit: 5,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getMostPopularGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getMostPopularGames(limit);
+      const result = await gameService.getMostPopularGames(pagination);
 
-      expect(result).toEqual([]);
-      expect(igdbAdapter.getMostPopularGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual([]);
+      expect(igdbAdapter.getMostPopularGames).toHaveBeenCalledWith(pagination);
     });
 
     it("should throw error when adapter fails", async () => {
-      const limit = 2;
+      const pagination = { limit: 2, offset: 0 };
       const error = new Error("API Error");
       igdbAdapter.getMostPopularGames.mockRejectedValue(error);
 
-      await expect(gameService.getMostPopularGames(limit)).rejects.toThrow(
+      await expect(gameService.getMostPopularGames(pagination)).rejects.toThrow(
         "API Error"
       );
     });
@@ -165,34 +225,54 @@ describe("GameServiceImplementation", () => {
 
   describe("getTopRatedGames", () => {
     it("should return top rated games sorted by rating", async () => {
-      const limit = 2;
+      const pagination = { limit: 2, offset: 0 };
       const sortedGames = [...mockGames].sort((a, b) => b.rating - a.rating);
       const expectedGames = sortedGames.slice(0, 2);
-      igdbAdapter.getTopRatedGames.mockResolvedValue(expectedGames);
+      const mockResponse = {
+        data: expectedGames,
+        pagination: {
+          total: 2,
+          limit: 2,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getTopRatedGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getTopRatedGames(limit);
+      const result = await gameService.getTopRatedGames(pagination);
 
-      expect(result).toEqual(expectedGames);
-      expect(result[0].rating).toBeGreaterThanOrEqual(result[1].rating);
-      expect(igdbAdapter.getTopRatedGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual(expectedGames);
+      expect(result.data[0].rating).toBeGreaterThanOrEqual(
+        result.data[1].rating
+      );
+      expect(igdbAdapter.getTopRatedGames).toHaveBeenCalledWith(pagination);
     });
 
     it("should return empty array when no games are found", async () => {
-      const limit = 5;
-      igdbAdapter.getTopRatedGames.mockResolvedValue([]);
+      const pagination = { limit: 5, offset: 0 };
+      const mockResponse = {
+        data: [],
+        pagination: {
+          total: 0,
+          limit: 5,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getTopRatedGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getTopRatedGames(limit);
+      const result = await gameService.getTopRatedGames(pagination);
 
-      expect(result).toEqual([]);
-      expect(igdbAdapter.getTopRatedGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual([]);
+      expect(igdbAdapter.getTopRatedGames).toHaveBeenCalledWith(pagination);
     });
 
     it("should throw error when adapter fails", async () => {
-      const limit = 2;
+      const pagination = { limit: 2, offset: 0 };
       const error = new Error("API Error");
       igdbAdapter.getTopRatedGames.mockRejectedValue(error);
 
-      await expect(gameService.getTopRatedGames(limit)).rejects.toThrow(
+      await expect(gameService.getTopRatedGames(pagination)).rejects.toThrow(
         "API Error"
       );
     });
@@ -231,33 +311,53 @@ describe("GameServiceImplementation", () => {
     ];
 
     it("should return upcoming games sorted by release date", async () => {
-      const limit = 2;
-      igdbAdapter.getUpcomingGames.mockResolvedValue(futureMockGames);
+      const pagination = { limit: 2, offset: 0 };
+      const mockResponse = {
+        data: futureMockGames,
+        pagination: {
+          total: 2,
+          limit: 2,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getUpcomingGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getUpcomingGames(limit);
+      const result = await gameService.getUpcomingGames(pagination);
 
-      expect(result).toEqual(futureMockGames);
-      expect(result[0].releaseDate).toBeDefined();
-      expect(result[0].releaseDate! < result[1].releaseDate!).toBe(true);
-      expect(igdbAdapter.getUpcomingGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual(futureMockGames);
+      expect(result.data[0].releaseDate).toBeDefined();
+      expect(result.data[0].releaseDate! < result.data[1].releaseDate!).toBe(
+        true
+      );
+      expect(igdbAdapter.getUpcomingGames).toHaveBeenCalledWith(pagination);
     });
 
     it("should return empty array when no upcoming games are found", async () => {
-      const limit = 5;
-      igdbAdapter.getUpcomingGames.mockResolvedValue([]);
+      const pagination = { limit: 5, offset: 0 };
+      const mockResponse = {
+        data: [],
+        pagination: {
+          total: 0,
+          limit: 5,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getUpcomingGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getUpcomingGames(limit);
+      const result = await gameService.getUpcomingGames(pagination);
 
-      expect(result).toEqual([]);
-      expect(igdbAdapter.getUpcomingGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual([]);
+      expect(igdbAdapter.getUpcomingGames).toHaveBeenCalledWith(pagination);
     });
 
     it("should throw error when adapter fails", async () => {
-      const limit = 2;
+      const pagination = { limit: 2, offset: 0 };
       const error = new Error("API Error");
       igdbAdapter.getUpcomingGames.mockRejectedValue(error);
 
-      await expect(gameService.getUpcomingGames(limit)).rejects.toThrow(
+      await expect(gameService.getUpcomingGames(pagination)).rejects.toThrow(
         "API Error"
       );
     });
@@ -296,35 +396,59 @@ describe("GameServiceImplementation", () => {
     ];
 
     it("should return recent release games sorted by release date", async () => {
-      const limit = 2;
-      igdbAdapter.getRecentReleaseGames.mockResolvedValue(recentMockGames);
+      const pagination = { limit: 2, offset: 0 };
+      const mockResponse = {
+        data: recentMockGames,
+        pagination: {
+          total: 2,
+          limit: 2,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getRecentReleaseGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getRecentReleaseGames(limit);
+      const result = await gameService.getRecentReleaseGames(pagination);
 
-      expect(result).toEqual(recentMockGames);
-      expect(result[0].releaseDate).toBeDefined();
-      expect(result[0].releaseDate! > result[1].releaseDate!).toBe(true);
-      expect(igdbAdapter.getRecentReleaseGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual(recentMockGames);
+      expect(result.data[0].releaseDate).toBeDefined();
+      expect(result.data[0].releaseDate! > result.data[1].releaseDate!).toBe(
+        true
+      );
+      expect(igdbAdapter.getRecentReleaseGames).toHaveBeenCalledWith(
+        pagination
+      );
     });
 
     it("should return empty array when no recent games are found", async () => {
-      const limit = 5;
-      igdbAdapter.getRecentReleaseGames.mockResolvedValue([]);
+      const pagination = { limit: 5, offset: 0 };
+      const mockResponse = {
+        data: [],
+        pagination: {
+          total: 0,
+          limit: 5,
+          offset: 0,
+          hasMore: false,
+        },
+      };
+      igdbAdapter.getRecentReleaseGames.mockResolvedValue(mockResponse);
 
-      const result = await gameService.getRecentReleaseGames(limit);
+      const result = await gameService.getRecentReleaseGames(pagination);
 
-      expect(result).toEqual([]);
-      expect(igdbAdapter.getRecentReleaseGames).toHaveBeenCalledWith(limit);
+      expect(result.data).toEqual([]);
+      expect(igdbAdapter.getRecentReleaseGames).toHaveBeenCalledWith(
+        pagination
+      );
     });
 
     it("should throw error when adapter fails", async () => {
-      const limit = 2;
+      const pagination = { limit: 2, offset: 0 };
       const error = new Error("API Error");
       igdbAdapter.getRecentReleaseGames.mockRejectedValue(error);
 
-      await expect(gameService.getRecentReleaseGames(limit)).rejects.toThrow(
-        "API Error"
-      );
+      await expect(
+        gameService.getRecentReleaseGames(pagination)
+      ).rejects.toThrow("API Error");
     });
   });
 });

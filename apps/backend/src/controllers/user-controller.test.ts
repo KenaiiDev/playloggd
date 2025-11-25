@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { DeepMockProxy, mockDeep } from "vitest-mock-extended";
 import { UserController } from "./user-controller";
-import { User, ValidationError } from "@playloggd/domain";
+import { User, ValidationError, NotFoundError } from "@playloggd/domain";
 import { UserServiceImplementation } from "@/services/user-service-implementation";
 import { AuthServiceImplementation } from "@/services/auth-service-implementation";
 import { createRequest, createResponse } from "node-mocks-http";
@@ -122,8 +122,10 @@ describe("UserController", () => {
       res.json = vi.fn();
       const next = vi.fn();
 
+      userServiceMock.getById.mockResolvedValue(undefined);
+
       await userController.getUserById(req, res, next);
-      expect(next).toHaveBeenCalledWith(new ValidationError("Unauthorized!"));
+      expect(next).toHaveBeenCalledWith(new NotFoundError("User not found"));
     });
 
     it("should call next if user is not found in getUserById", async () => {
