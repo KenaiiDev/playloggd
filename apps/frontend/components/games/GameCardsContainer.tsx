@@ -20,11 +20,7 @@ type GameCardsContainerProps = {
 
 const ITEMS_PER_PAGE_OPTIONS = [12, 24, 36, 48] as const;
 
-export function GameCardsContainer({
-  games,
-  onStatusChange,
-  getUserGameStatus,
-}: GameCardsContainerProps) {
+export function GameCardsContainer({ games }: GameCardsContainerProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(
     ITEMS_PER_PAGE_OPTIONS[0]
@@ -40,7 +36,6 @@ export function GameCardsContainer({
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll to top when changing page
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

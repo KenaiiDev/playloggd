@@ -263,7 +263,6 @@ const mockGames: Game[] = [
   },
 ];
 
-// Create more games for pagination testing
 const largeGameList: Game[] = Array.from({ length: 50 }, (_, index) => ({
   ...mockGames[index % mockGames.length],
   externalId: `${index + 1}`,
@@ -277,7 +276,6 @@ export const Default: Story = {
       console.log(`Game ${gameId} status changed to ${status}`);
     },
     getUserGameStatus: (gameId: string) => {
-      // Simulate some games having status
       const statuses: Record<
         string,
         (typeof GAME_STATUS)[keyof typeof GAME_STATUS]
@@ -298,7 +296,6 @@ export const WithManyGames: Story = {
       console.log(`Game ${gameId} status changed to ${status}`);
     },
     getUserGameStatus: (gameId: string) => {
-      // Simulate some games having status
       const num = parseInt(gameId);
       if (num % 3 === 0) return GAME_STATUS.COMPLETED;
       if (num % 5 === 0) return GAME_STATUS.PLAYING;
