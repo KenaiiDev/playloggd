@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useGame } from "@/lib/hooks/use-games";
 import { useAuthStore } from "@/stores/auth-store";
@@ -31,22 +30,11 @@ export default function GameDetailsPage() {
   const gameId = params.id as string;
 
   const { data: game, isLoading, error } = useGame(gameId);
-  const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { getGameEntry, addGame, updateStatus, removeGame } =
     useGameCollectionStore();
 
-  const [currentStatus, setCurrentStatus] = useState<GameStatus | null>(null);
-
-  // Cargar estado inicial desde el store
-  useEffect(() => {
-    const entry = getGameEntry(gameId);
-    if (entry) {
-      setCurrentStatus(entry.status);
-    } else {
-      setCurrentStatus(null);
-    }
-  }, [gameId, getGameEntry]);
+  const currentStatus = getGameEntry(gameId)?.status ?? null;
 
   const handleStatusChange = async (status: GameStatus) => {
     if (!isAuthenticated) {
@@ -55,24 +43,18 @@ export default function GameDetailsPage() {
     }
 
     try {
-      // Si hacen click en el mismo status que ya está seleccionado, eliminar
       if (currentStatus === status) {
         await removeGame(gameId);
-        setCurrentStatus(null);
         return;
       }
 
       const existingEntry = getGameEntry(gameId);
 
       if (existingEntry) {
-        // Actualizar status existente
         await updateStatus(gameId, status);
       } else {
-        // Agregar nuevo juego a la colección
         await addGame(gameId, status);
       }
-
-      setCurrentStatus(status);
     } catch (error) {
       console.error("Failed to update game status:", error);
     }
