@@ -44,9 +44,11 @@ export const Default: Story = {
 
 export const Loading: Story = {
   args: {
-    gameId: "999999",
+    gameId: "999999", // Non-existent game to show loading state
   },
-  parameters: {},
+  parameters: {
+    // In a real scenario, you'd mock the API to return loading state
+  },
 };
 
 export const WithPopularGame: Story = {

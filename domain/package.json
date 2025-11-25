@@ -2,21 +2,27 @@
   "name": "@playloggd/domain",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "clean": "rm -rf dist",
-    "aliases": "tsc-alias",
-    "build": "tsc --project tsconfig.json && tsc-alias",
-    "build:verbose": "tsc --listFiles",
+    "build": "tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch",
     "test": "vitest",
     "test:watch": "vitest watch",
-    "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],
@@ -26,6 +32,8 @@
   "devDependencies": {
     "@types/node": "^24.6.2",
     "tsc-alias": "^1.8.16",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
     "vitest-mock-extended": "^3.1.0"

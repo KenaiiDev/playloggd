@@ -38,11 +38,6 @@ const gameEntryRoutes = new GameEntryRoutes(gameEntryController);
 const gameReviewController = buildGameReviewController();
 const gameReviewRoutes = new GameReviewRoutes(gameReviewController);
 
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
-
 app.use("/api", userRoutes.router);
 app.use("/api", authRoutes.router);
 app.use("/api", gameRoutes.router);

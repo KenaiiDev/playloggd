@@ -19,9 +19,14 @@ type Story = StoryObj<typeof Navbar>;
 export const Default: Story = {};
 
 export const Authenticated: Story = {
-  parameters: {},
+  parameters: {
+    // Mock the auth store to show authenticated state
+    // Note: In a real scenario, you'd need to mock the Zustand store
+  },
 };
 
 export const Guest: Story = {
-  parameters: {},
+  parameters: {
+    // Mock the auth store to show guest/unauthenticated state
+  },
 };
