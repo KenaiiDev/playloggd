@@ -43,10 +43,13 @@ export function Navbar() {
 
               {/* User Section */}
               <div className="flex items-center gap-3 ml-4 pl-4 border-l">
-                <div className="flex items-center gap-2">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
+                >
                   <User className="h-4 w-4" />
-                  <span className="text-sm font-medium">{user?.username}</span>
-                </div>
+                  <span>{user?.username}</span>
+                </Link>
                 <Button
                   variant="ghost"
                   size="sm"

@@ -47,13 +47,11 @@ export function GameCard({
     }
 
     try {
-      // Si hacen click en el mismo status que ya está seleccionado, eliminar
       if (currentStatus === status) {
         await removeGame(gameId);
         return;
       }
 
-      // Si ya existe, actualizar; si no, agregar nuevo
       if (currentEntry) {
         await updateStatus(gameId, status);
       } else {
@@ -63,8 +61,6 @@ export function GameCard({
       console.error("Failed to update game status:", error);
     }
   };
-
-  // Mostrar botones si showActions=true O si el usuario está autenticado
   const shouldShowActions = showActions || isAuthenticated;
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -74,7 +70,7 @@ export function GameCard({
 
   return (
     <Link href={`/games/${gameId}`}>
-      <Card className="bg-card cursor-pointer transition hover:scale-105 active:scale-100 text-card-foreground py-0 gap-0 shadow-md w-full">
+      <Card className="bg-card cursor-pointer transition hover:scale-105 active:scale-100 text-card-foreground py-0 gap-0 shadow-md w-full h-full flex flex-col">
         <CardHeader className="p-0">
           <div className="relative group overflow-hidden aspect-3/4">
             <Image
@@ -96,15 +92,16 @@ export function GameCard({
             )}
           </div>
         </CardHeader>
-        <CardContent className="p-4 space-y-2">
+        <CardContent className="p-4 space-y-2 flex-1 flex flex-col">
           <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-semibold">{title}</h3>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-semibold line-clamp-2">{title}</h3>
             </div>
             <Badge
               variant={
                 rating < 4 ? "destructive" : rating < 7 ? "warning" : "success"
               }
+              className="shrink-0 ml-2"
             >
               {rating.toFixed(1)}
             </Badge>
@@ -112,15 +109,17 @@ export function GameCard({
           <p className="text-sm text-muted-foreground line-clamp-3">
             {description}
           </p>
-          <GenresContainer genres={genres} />
-          {recommended && (
-            <Badge
-              variant="default"
-              className="w-fit bg-primary text-primary-foreground"
-            >
-              Recommended
-            </Badge>
-          )}
+          <div className="mt-auto">
+            <GenresContainer genres={genres} />
+            {recommended && (
+              <Badge
+                variant="default"
+                className="w-fit bg-primary text-primary-foreground mt-2"
+              >
+                Recommended
+              </Badge>
+            )}
+          </div>
         </CardContent>
       </Card>
     </Link>
